@@ -48,17 +48,17 @@ jobs:
             echo '::set-output name=status::failure'
             exit 1
           fi
-      - name: Preparing success Slack notification
+      - name: Prepare success Slack notification
         if: success()
         run: echo "::set-env name=SLACK_CUSTOM_PAYLOAD::${SLACK_CUSTOM_PAYLOAD}"
         env:
           SLACK_CUSTOM_PAYLOAD: '{"channel":"docker-ktools","attachments":[{"color":"#2eb886","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} workflow {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has passed with no issues","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions *<https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }}>* workflow *{{ GITHUB_JOB_NAME }}* job of *<https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}>* by *{{ GITHUB_ACTOR }}* has passed with no issues"}}]}]}'
-      - name: Preparing failure Slack notification
+      - name: Prepare failure Slack notification
         if: failure()
         run: echo "::set-env name=SLACK_CUSTOM_PAYLOAD::${SLACK_CUSTOM_PAYLOAD}"
         env:
           SLACK_CUSTOM_PAYLOAD: '{"channel":"docker-ktools","attachments":[{"color":"#ed2f00","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} workflow {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has failed with {{ LINT_ISSUES }} issues","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions *<https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }}>* workflow *{{ GITHUB_JOB_NAME }}* job of *<https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}>* by *{{ GITHUB_ACTOR }}* has failed with *{{ LINT_ISSUES }}* issues"}},{"type":"section","fields":[{"type":"mrkdwn","text":"*Prettier*:\n{{ LINT_ISSUES_PRETTIER }}"}]}]}]}'
-      - name: Sending Slack notification
+      - name: Send Slack notification
         uses: Ilshidur/action-slack@master
         if: always()
         env:
@@ -68,13 +68,13 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref != 'refs/heads/master'
     steps:
-      - name: Checking out
+      - name: Check out
         uses: actions/checkout@v2
-      - name: Setting a job-wide environment variables
+      - name: Set a job-wide environment variables
         run: |
           echo "::set-env name=BRANCH_NAME::${GITHUB_REF##*/}"
           echo '::set-env name=GITHUB_JOB_NAME::build'
-      - name: Building an Alpine image
+      - name: Build an Alpine image
         uses: docker/build-push-action@v1
         if: always()
         with:
@@ -86,7 +86,7 @@ jobs:
           dockerfile: ./alpine/Dockerfile
           tags: alpine
           push: false
-      - name: Building a Debian image
+      - name: Build a Debian image
         uses: docker/build-push-action@v1
         if: always()
         with:
@@ -98,17 +98,17 @@ jobs:
           dockerfile: ./debian/Dockerfile
           tags: debian
           push: false
-      - name: Preparing success Slack notification
+      - name: Prepare success Slack notification
         if: success()
         run: echo "::set-env name=SLACK_CUSTOM_PAYLOAD::${SLACK_CUSTOM_PAYLOAD}"
         env:
           SLACK_CUSTOM_PAYLOAD: '{"channel":"docker-ktools","attachments":[{"color":"#2eb886","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} workflow {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has passed","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions *<https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }}>* workflow *{{ GITHUB_JOB_NAME }}* job of *<https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}>* by *{{ GITHUB_ACTOR }}* has passed"}}]}]}'
-      - name: Preparing failure Slack notification
+      - name: Prepare failure Slack notification
         if: failure()
         run: echo "::set-env name=SLACK_CUSTOM_PAYLOAD::${SLACK_CUSTOM_PAYLOAD}"
         env:
           SLACK_CUSTOM_PAYLOAD: '{"channel":"docker-ktools","attachments":[{"color":"#ed2f00","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} workflow {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has failed","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions *<https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }}>* workflow *{{ GITHUB_JOB_NAME }}* job of *<https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}>* by *{{ GITHUB_ACTOR }}* has failed"}}]}]}'
-      - name: Sending Slack notification
+      - name: Send Slack notification
         uses: Ilshidur/action-slack@master
         if: always()
         env:
