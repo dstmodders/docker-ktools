@@ -15,80 +15,73 @@ compiled on a more recent [GCC][].
 
 ## Usage
 
-### Interactive Shell
-
-#### Linux
-
-##### Bash
-
 ```bash
 $ cd <your mod directory>
 $ docker pull viktorpopkov/ktools
+$ docker run --rm viktorpopkov/ktools krane --version
+$ docker run --rm viktorpopkov/ktools ktech --version
+```
+
+### Linux
+
+#### Bash
+
+##### Interactive Shell
+
+```shell script
 $ docker run --rm --interactive --tty \
     --mount src="$(pwd)",target='/data/',type=bind \
     --workdir='/data/' \
     viktorpopkov/ktools
 ```
 
-#### Windows
+##### Non-interactive Shell
 
-##### CMD
+```shell script
+$ docker run --rm \
+    --mount src="$(pwd)",target='/data/',type=bind \
+    --workdir='/data/' \
+    viktorpopkov/ktools
+    ktech images/example/* . --atlas images/example.xml
+```
 
-```bash
-$ cd <your mod directory>
-$ docker pull viktorpopkov/ktools
+### Windows
+
+#### CMD
+
+##### Interactive Shell
+
+```shell script
 $ docker run --rm --interactive --tty \
     --mount src="%CD%",target='/data/',type=bind \
     --workdir='/data/' \
     viktorpopkov/ktools
 ```
 
-##### PowerShell
+##### Non-interactive Shell
 
-```bash
-$ cd <your mod directory>
-$ docker pull viktorpopkov/ktools
+```shell script
+$ docker run --rm \
+    --mount src="%CD%",target='/data/',type=bind \
+    --workdir='/data/' \
+    viktorpopkov/ktools
+    ktech images/example/* . --atlas images/example.xml
+```
+
+#### PowerShell
+
+##### Interactive Shell
+
+```shell script
 $ docker run --rm --interactive --tty \
     --mount src="${PWD}",target='/data/',type=bind \
     --workdir='/data/' \
     viktorpopkov/ktools
 ```
 
-### Non-interactive Shell
+##### Non-interactive Shell
 
-#### Linux
-
-##### Bash
-
-```bash
-$ cd <your mod directory>
-$ docker pull viktorpopkov/ktools
-$ docker run --rm \
-    --mount src="$(pwd)",target='/data/',type=bind \
-    --workdir='/data/' \
-    viktorpopkov/ktools
-    ktech images/example/* . --atlas images/example.xml
-```
-
-#### Windows
-
-##### CMD
-
-```bash
-$ cd <your mod directory>
-$ docker pull viktorpopkov/ktools
-$ docker run --rm \
-    --mount src="%CD%",target='/data/',type=bind \
-    --workdir='/data/' \
-    viktorpopkov/ktools
-    ktech images/example/* . --atlas images/example.xml
-```
-
-##### PowerShell
-
-```bash
-$ cd <your mod directory>
-$ docker pull viktorpopkov/ktools
+```shell script
 $ docker run --rm \
     --mount src="${PWD}",target='/data/',type=bind \
     --workdir='/data/' \
