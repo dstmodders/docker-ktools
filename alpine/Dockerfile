@@ -8,6 +8,7 @@ ENV KTOOLS_VERSION="4.4.0"
 # Install dependencies
 RUN apk update \
   && apk add --no-cache \
+    gcc \
     libc-dev \
     libpng-dev \
     libzip-dev \
@@ -16,7 +17,6 @@ RUN apk update \
     ca-certificates \
     cmake \
     g++ \
-    gcc \
     git \
     make \
     wget
