@@ -28,7 +28,7 @@ jobs:
         run: |
           # Prettier
           export LINT_ISSUES_PRETTIER=$(prettier --list-different . | wc -l)
-          export LINT_ISSUES_PRETTIER=$((LINT_ISSUES_MD < 0 ? 0 : LINT_ISSUES_MD))
+          export LINT_ISSUES_PRETTIER=$((LINT_ISSUES_PRETTIER < 0 ? 0 : LINT_ISSUES_PRETTIER))
 
           # Issues
           export LINT_ISSUES="${LINT_ISSUES_PRETTIER}"
