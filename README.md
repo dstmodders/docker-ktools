@@ -33,6 +33,8 @@ $ docker run --rm --interactive --tty \
     --mount src="$(pwd)",target='/data/',type=bind \
     --workdir='/data/' \
     viktorpopkov/ktools
+# or
+$ docker run --rm -ti -w '/data/' -v "$(pwd):/data/" viktorpopkov/ktools
 ```
 
 ##### Non-interactive Shell
@@ -42,6 +44,9 @@ $ docker run --rm \
     --mount src="$(pwd)",target='/data/',type=bind \
     --workdir='/data/' \
     viktorpopkov/ktools
+    ktech images/example/* . --atlas images/example.xml
+# or
+$ docker run --rm -w '/data/' -v "$(pwd):/data/" viktorpopkov/ktools \
     ktech images/example/* . --atlas images/example.xml
 ```
 
@@ -56,6 +61,8 @@ $ docker run --rm --interactive --tty \
     --mount src="%CD%",target='/data/',type=bind \
     --workdir='/data/' \
     viktorpopkov/ktools
+# or
+$ docker run --rm -ti -w '/data/' -v "%CD%:/data/" viktorpopkov/ktools
 ```
 
 ##### Non-interactive Shell
@@ -65,6 +72,9 @@ $ docker run --rm \
     --mount src="%CD%",target='/data/',type=bind \
     --workdir='/data/' \
     viktorpopkov/ktools
+    ktech images/example/* . --atlas images/example.xml
+# or
+$ docker run --rm -w '/data/' -v "%CD%:/data/" viktorpopkov/ktools \
     ktech images/example/* . --atlas images/example.xml
 ```
 
@@ -77,6 +87,8 @@ $ docker run --rm --interactive --tty \
     --mount src="${PWD}",target='/data/',type=bind \
     --workdir='/data/' \
     viktorpopkov/ktools
+# or
+$ docker run --rm -ti -w '/data/' -v "${PWD}:/data/" viktorpopkov/ktools
 ```
 
 ##### Non-interactive Shell
@@ -86,6 +98,9 @@ $ docker run --rm \
     --mount src="${PWD}",target='/data/',type=bind \
     --workdir='/data/' \
     viktorpopkov/ktools
+    ktech images/example/* . --atlas images/example.xml
+# or
+$ docker run --rm -w '/data/' -v "${PWD}:/data/" viktorpopkov/ktools \
     ktech images/example/* . --atlas images/example.xml
 ```
 
