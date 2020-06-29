@@ -26,18 +26,6 @@ jobs:
           always_pull: true
           dockerfile: ./alpine/Dockerfile
           tags: latest,alpine
-      - name: Build & push an Alpine image on GitHub Packages
-        uses: docker/build-push-action@v1
-        if: always()
-        with:
-          registry: docker.pkg.github.com
-          username: ${{ secrets.PACKAGES_USERNAME }}
-          password: ${{ secrets.PACKAGES_PASSWORD }}
-          repository: ${{ github.repository }}/alpine
-          cache_froms: docker.pkg.github.com/${{ github.repository }}/alpine
-          always_pull: true
-          dockerfile: ./alpine/Dockerfile
-          tags: latest
       - name: Prepare success Slack notification
         if: success()
         run: echo "::set-env name=SLACK_CUSTOM_PAYLOAD::${SLACK_CUSTOM_PAYLOAD}"
@@ -74,18 +62,6 @@ jobs:
           always_pull: true
           dockerfile: ./debian/Dockerfile
           tags: debian
-      - name: Build & push a Debian image on GitHub Packages
-        uses: docker/build-push-action@v1
-        if: always()
-        with:
-          registry: docker.pkg.github.com
-          username: ${{ secrets.PACKAGES_USERNAME }}
-          password: ${{ secrets.PACKAGES_PASSWORD }}
-          repository: ${{ github.repository }}/debian
-          cache_froms: docker.pkg.github.com/${{ github.repository }}/debian
-          always_pull: true
-          dockerfile: ./debian/Dockerfile
-          tags: latest
       - name: Prepare success Slack notification
         if: success()
         run: echo "::set-env name=SLACK_CUSTOM_PAYLOAD::${SLACK_CUSTOM_PAYLOAD}"
