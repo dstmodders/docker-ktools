@@ -22,7 +22,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           repository: ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
-          cache_froms: ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
+          cache_froms: ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:alpine
           always_pull: true
           dockerfile: ./alpine/Dockerfile
           tags: latest,alpine
@@ -58,7 +58,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           repository: ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
-          cache_froms: ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
+          cache_froms: ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:debian
           always_pull: true
           dockerfile: ./debian/Dockerfile
           tags: debian
