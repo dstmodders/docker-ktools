@@ -73,6 +73,18 @@ jobs:
           always_pull: true
           dockerfile: ./debian/Dockerfile
           tags: debian
+      - name: Build & push a Debian image on GitHub Packages
+        uses: docker/build-push-action@v1
+        if: always()
+        with:
+          registry: docker.pkg.github.com
+          username: ${{ secrets.PACKAGES_USERNAME }}
+          password: ${{ secrets.PACKAGES_PASSWORD }}
+          repository: ${{ github.repository }}/ktools
+          cache_froms: docker.pkg.github.com/${{ github.repository }}/ktools:debian
+          always_pull: true
+          dockerfile: ./debian/Dockerfile
+          tags: debian
       - name: Prepare success Slack notification
         if: success()
         run: echo "::set-env name=SLACK_CUSTOM_PAYLOAD::${SLACK_CUSTOM_PAYLOAD}"
