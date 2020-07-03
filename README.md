@@ -16,7 +16,7 @@ compiled on a more recent [GCC][].
 ## Usage
 
 ```shell script
-$ cd <your directory>
+$ cd <your data directory>
 $ docker pull viktorpopkov/ktools
 ```
 
@@ -24,7 +24,7 @@ $ docker pull viktorpopkov/ktools
 
 ```shell script
 $ docker run --rm --interactive --tty \
-    --mount src='<your directory>',target='/data/',type=bind \
+    --mount src='<your data directory>',target='/data/',type=bind \
     --workdir='/data/' \
     viktorpopkov/ktools
 ```
@@ -33,7 +33,7 @@ $ docker run --rm --interactive --tty \
 
 ```shell script
 $ docker run --rm \
-    --mount src='<your directory>',target='/data/',type=bind \
+    --mount src='<your data directory>',target='/data/',type=bind \
     --workdir='/data/' \
     viktorpopkov/ktools \
     ktech --version
