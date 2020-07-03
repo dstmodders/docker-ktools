@@ -1,5 +1,4 @@
 name: CI
-
 on:
   push:
     branches:
@@ -41,7 +40,7 @@ jobs:
           prettier --check . || true
 
           # status
-          if [ "${LINT_ISSUES_PRETTIER}" -eq 0 ]; then
+          if [ "${LINT_ISSUES}" -eq 0 ]; then
             echo '::set-output name=status::success'
             exit 0
           else
