@@ -51,7 +51,7 @@ $ docker run --rm --interactive --tty \
     --workdir='/data/' \
     viktorpopkov/ktools
 # or
-$ docker run --rm -it -w '/data/' -v "$(pwd):/data/" viktorpopkov/ktools
+$ docker run --rm -itv "$(pwd):/data/" viktorpopkov/ktools
 ```
 
 ##### Non-interactive Shell
@@ -67,7 +67,7 @@ $ docker run --rm -v "$(pwd):/data/" viktorpopkov/ktools ktech --version
 ##### Interactive Shell
 
 ```shell script
-$ docker run --rm -it -v "%CD%:/data/" viktorpopkov/ktools
+$ docker run --rm -itv "%CD%:/data/" viktorpopkov/ktools
 ```
 
 ##### Non-interactive Shell
@@ -81,7 +81,7 @@ $ docker run --rm -v "%CD%:/data/" viktorpopkov/ktools ktech --version
 ##### Interactive Shell
 
 ```shell script
-$ docker run --rm -it -v "${PWD}:/data/" viktorpopkov/ktools
+$ docker run --rm -itv "${PWD}:/data/" viktorpopkov/ktools
 ```
 
 ##### Non-interactive Shell
