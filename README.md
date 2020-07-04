@@ -66,28 +66,28 @@ $ docker run --rm -v "$(pwd):/data/" viktorpopkov/ktools ktech --version
 
 ##### Interactive Shell
 
-```shell script
-$ docker run --rm -itv "%CD%:/data/" viktorpopkov/ktools
+```cmd
+> docker run --rm -itv "%CD%:/data/" viktorpopkov/ktools
 ```
 
 ##### Non-interactive Shell
 
-```shell script
-$ docker run --rm -v "%CD%:/data/" viktorpopkov/ktools ktech --version
+```cmd
+> docker run --rm -v "%CD%:/data/" viktorpopkov/ktools ktech --version
 ```
 
 #### PowerShell
 
 ##### Interactive Shell
 
-```shell script
-$ docker run --rm -itv "${PWD}:/data/" viktorpopkov/ktools
+```powershell
+PS:\> docker run --rm -itv "${PWD}:/data/" viktorpopkov/ktools
 ```
 
 ##### Non-interactive Shell
 
-```shell script
-$ docker run --rm -v "${PWD}:/data/" viktorpopkov/ktools ktech --version
+```powershell
+PS:\> docker run --rm -v "${PWD}:/data/" viktorpopkov/ktools ktech --version
 ```
 
 ## License
