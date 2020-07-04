@@ -2,8 +2,8 @@ FROM alpine:3.12.0
 
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
+ENV DS_KTOOLS_VERSION="4.4.0"
 ENV IMAGEMAGICK_VERSION="6.9.11-3"
-ENV KTOOLS_VERSION="4.4.0"
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
