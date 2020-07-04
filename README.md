@@ -13,6 +13,20 @@ This repository uses a forked version ([victorpopkov/ktools][]) which includes
 the [#13](https://github.com/nsimplex/ktools/pull/13) fix, so that it could be
 compiled on a more recent [GCC][].
 
+- [Environment variables](#environment-variables)
+- [Usage](#usage)
+  - [Linux](#linux)
+  - [Windows](#windows)
+
+## Environment variables
+
+| Name                  | Value                  | Description                         |
+| --------------------- | ---------------------- | ----------------------------------- |
+| `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | Absolute path to the [krane][] tool |
+| `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | Absolute path to the [ktech][] tool |
+| `DS_KTOOLS_VERSION`   | `4.4.0`                | [ktools][] version                  |
+| `IMAGEMAGICK_VERSION` | `6.9.11-3`             | [ImageMagick][] version             |
+
 ## Usage
 
 ```shell script
@@ -102,5 +116,8 @@ Released under the [MIT License](https://opensource.org/licenses/MIT).
 [gcc]: https://gcc.gnu.org/
 [github workflow ci status]: https://img.shields.io/github/workflow/status/victorpopkov/docker-ktools/CI?label=CI
 [github workflow publish status]: https://img.shields.io/github/workflow/status/victorpopkov/docker-ktools/Publish?label=Publish
+[imagemagick]: https://imagemagick.org/index.php
+[krane]: https://github.com/nsimplex/ktools#krane
+[ktech]: https://github.com/nsimplex/ktools#ktech
 [ktools]: https://github.com/nsimplex/ktools
 [victorpopkov/ktools]: https://github.com/victorpopkov/ktools
