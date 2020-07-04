@@ -20,8 +20,7 @@ RUN apk update \
     cmake=3.17.2-r0 \
     g++=9.3.0-r2 \
     git=2.26.2-r0 \
-    make=4.3-r0 \
-    wget=1.20.3-r1
+    make=4.3-r0
 
 # Download and extract ImageMagick and ktools
 RUN wget -P /tmp/ "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
