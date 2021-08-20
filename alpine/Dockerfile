@@ -1,9 +1,10 @@
 FROM alpine:3.14.1
 
+ARG DS_KTOOLS_VERSION="4.4.0"
+ARG IMAGEMAGICK_VERSION="6.9.12-19"
+
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
-ENV DS_KTOOLS_VERSION="4.4.0"
-ENV IMAGEMAGICK_VERSION="6.9.11-3"
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
@@ -16,17 +17,16 @@ RUN apk update \
     libzip-dev='1.7.3-r2' \
     readline-dev='8.1.0-r0' \
   && apk add --no-cache --virtual .build-deps \
-    ca-certificates='20191127-r5' \
     cmake='3.20.3-r0' \
     g++='10.3.1_git20210424-r2' \
-    git='2.32.0-r0' \
-    make='4.3-r0'
+    make='4.3-r0' \
+    patch='2.7.6-r7'
 
 # Download and extract ImageMagick and ktools
 RUN wget -P /tmp/ "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
   && tar xf "/tmp/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" -C /tmp/ \
-  # ktools
-  && git clone https://github.com/victorpopkov/ktools.git /tmp/ktools/
+  && wget -P /tmp/ "https://github.com/victorpopkov/ktools/archive/refs/tags/${DS_KTOOLS_VERSION}.tar.gz" \
+  && tar xzf "/tmp/${DS_KTOOLS_VERSION}.tar.gz" -C /tmp/
 
 # Build and install ImageMagick
 WORKDIR /tmp/ImageMagick-${IMAGEMAGICK_VERSION}/
@@ -36,8 +36,10 @@ RUN ./configure \
   && ldconfig /usr/local/lib/
 
 # Install ktools
-WORKDIR /tmp/ktools/
-RUN cmake \
+WORKDIR /tmp/ktools-${DS_KTOOLS_VERSION}/
+RUN wget -P /tmp/ 'https://github.com/victorpopkov/ktools/commit/47f38381671e03455eab193a1d3a88e11666af99.patch' \
+  && patch -p1 < /tmp/47f38381671e03455eab193a1d3a88e11666af99.patch \
+  && cmake \
     -DImageMagick_Magick++_LIBRARY="$(pkg-config --variable=libdir Magick++)/lib$(pkg-config --variable=libname Magick++).so" \
     -DImageMagick_MagickCore_INCLUDE_DIR="$(pkg-config --cflags-only-I MagickCore | tail -c+3)" \
     -DImageMagick_MagickCore_LIBRARY="$(pkg-config --variable=libdir MagickCore)/lib$(pkg-config --variable=libname MagickCore).so" \
