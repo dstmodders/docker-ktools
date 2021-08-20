@@ -15,8 +15,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Set a job-wide environment variables
         run: |
-          echo "::set-env name=BRANCH_NAME::${GITHUB_REF##*/}"
-          echo '::set-env name=GITHUB_JOB_NAME::build'
+          echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "GITHUB_JOB_NAME=build" >> $GITHUB_ENV
       - name: Build an Alpine image
         uses: docker/build-push-action@v1
         if: always()
@@ -43,12 +43,12 @@ jobs:
           push: false
       - name: Prepare success Slack notification
         if: success()
-        run: echo "::set-env name=SLACK_CUSTOM_PAYLOAD::${SLACK_CUSTOM_PAYLOAD}"
+        run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
         env:
           SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"#2eb886","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} workflow {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has passed","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions *<https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }}>* workflow *{{ GITHUB_JOB_NAME }}* job of *<https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}>* by *{{ GITHUB_ACTOR }}* has passed"}}]}]}'
       - name: Prepare failure Slack notification
         if: failure()
-        run: echo "::set-env name=SLACK_CUSTOM_PAYLOAD::${SLACK_CUSTOM_PAYLOAD}"
+        run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
         env:
           SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"#ed2f00","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} workflow {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has failed","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions *<https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }}>* workflow *{{ GITHUB_JOB_NAME }}* job of *<https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}>* by *{{ GITHUB_ACTOR }}* has failed"}}]}]}'
       - name: Send Slack notification
@@ -64,8 +64,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Set a job-wide environment variables
         run: |
-          echo "::set-env name=BRANCH_NAME::${GITHUB_REF##*/}"
-          echo '::set-env name=GITHUB_JOB_NAME::lint'
+          echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "GITHUB_JOB_NAME=lint" >> $GITHUB_ENV
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
@@ -84,8 +84,8 @@ jobs:
           export LINT_ISSUES="${LINT_ISSUES_PRETTIER}"
 
           # env
-          echo "::set-env name=LINT_ISSUES::${LINT_ISSUES}"
-          echo "::set-env name=LINT_ISSUES_PRETTIER::${LINT_ISSUES_PRETTIER}"
+          echo "LINT_ISSUES=${LINT_ISSUES}" >> $GITHUB_ENV
+          echo "LINT_ISSUES_PRETTIER=${LINT_ISSUES_PRETTIER}" >> $GITHUB_ENV
 
           # lint
           prettier --check . || true
@@ -100,12 +100,12 @@ jobs:
           fi
       - name: Prepare success Slack notification
         if: success()
-        run: echo "::set-env name=SLACK_CUSTOM_PAYLOAD::${SLACK_CUSTOM_PAYLOAD}"
+        run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
         env:
           SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"#2eb886","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} workflow {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has passed with no issues","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions *<https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }}>* workflow *{{ GITHUB_JOB_NAME }}* job of *<https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}>* by *{{ GITHUB_ACTOR }}* has passed with no issues"}}]}]}'
       - name: Prepare failure Slack notification
         if: failure()
-        run: echo "::set-env name=SLACK_CUSTOM_PAYLOAD::${SLACK_CUSTOM_PAYLOAD}"
+        run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
         env:
           SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"#ed2f00","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} workflow {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has failed with {{ LINT_ISSUES }} issues","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions *<https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }}>* workflow *{{ GITHUB_JOB_NAME }}* job of *<https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}>* by *{{ GITHUB_ACTOR }}* has failed with *{{ LINT_ISSUES }}* issues"}},{"type":"section","fields":[{"type":"mrkdwn","text":"*Prettier*:\n{{ LINT_ISSUES_PRETTIER }}"}]}]}]}'
       - name: Send Slack notification
