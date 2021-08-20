@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bullseye
 
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
@@ -10,15 +10,15 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Install dependencies
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-    build-essential=12.6 \
-    ca-certificates=20200601~deb10u1 \
-    cmake=3.13.4-1 \
-    git=1:2.20.1-2+deb10u3 \
-    libpng-dev=1.6.36-6 \
-    libreadline-dev=7.0-5 \
-    libzip-dev=1.5.1-4 \
-    pkg-config=0.29-6 \
-    wget=1.20.1-1.1 \
+    build-essential='12.9' \
+    ca-certificates='20210119' \
+    cmake='3.18.4-2' \
+    git='1:2.30.2-1' \
+    libpng-dev='1.6.37-3' \
+    libreadline-dev='8.1-1' \
+    libzip-dev='1.7.3-1' \
+    pkg-config='0.29.2-1' \
+    wget='1.21-1+b1' \
   && apt-get clean \
   && rm -Rf /var/lib/apt/lists/*
 
