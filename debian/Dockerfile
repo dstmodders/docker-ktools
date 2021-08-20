@@ -1,9 +1,10 @@
 FROM debian:bullseye
 
+ARG DS_KTOOLS_VERSION="4.4.0"
+ARG IMAGEMAGICK_VERSION="6.9.12-19"
+
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
-ENV DS_KTOOLS_VERSION="4.4.0"
-ENV IMAGEMAGICK_VERSION="6.9.11-3"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -17,6 +18,7 @@ RUN apt-get update \
     libpng-dev='1.6.37-3' \
     libreadline-dev='8.1-1' \
     libzip-dev='1.7.3-1' \
+    patch='2.7.6-7' \
     pkg-config='0.29.2-1' \
     wget='1.21-1+b1' \
   && apt-get clean \
@@ -25,8 +27,8 @@ RUN apt-get update \
 # Download and extract ImageMagick and ktools
 RUN wget -P /tmp/ "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
   && tar xf "/tmp/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" -C /tmp/ \
-  # ktools
-  && git clone https://github.com/victorpopkov/ktools.git /tmp/ktools/
+  && wget -P /tmp/ "https://github.com/victorpopkov/ktools/archive/refs/tags/${DS_KTOOLS_VERSION}.tar.gz" \
+  && tar xzf "/tmp/${DS_KTOOLS_VERSION}.tar.gz" -C /tmp/
 
 # Build and install ImageMagick
 WORKDIR /tmp/ImageMagick-${IMAGEMAGICK_VERSION}/
@@ -36,8 +38,10 @@ RUN ./configure \
   && ldconfig /usr/local/lib/
 
 # Install ktools
-WORKDIR /tmp/ktools/
-RUN cmake \
+WORKDIR /tmp/ktools-${DS_KTOOLS_VERSION}/
+RUN wget -P /tmp/ 'https://github.com/victorpopkov/ktools/commit/47f38381671e03455eab193a1d3a88e11666af99.patch' \
+  && patch -p1 < /tmp/47f38381671e03455eab193a1d3a88e11666af99.patch \
+  && cmake \
     -DImageMagick_Magick++_LIBRARY="$(pkg-config --variable=libdir Magick++)/lib$(pkg-config --variable=libname Magick++).so" \
     -DImageMagick_MagickCore_INCLUDE_DIR="$(pkg-config --cflags-only-I MagickCore | tail -c+3)" \
     -DImageMagick_MagickCore_LIBRARY="$(pkg-config --variable=libdir MagickCore)/lib$(pkg-config --variable=libname MagickCore).so" \
@@ -54,6 +58,7 @@ RUN apt-get remove -y \
     ca-certificates \
     cmake \
     git \
+    patch \
     pkg-config \
     wget \
   && rm -Rf /tmp/*
