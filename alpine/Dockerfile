@@ -1,4 +1,4 @@
-FROM alpine:3.12.0
+FROM alpine:3.14.1
 
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
@@ -10,17 +10,17 @@ SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 # Install dependencies
 RUN apk update \
   && apk add --no-cache \
-    gcc=9.3.0-r2 \
-    libc-dev=0.7.2-r3 \
-    libpng-dev=1.6.37-r1 \
-    libzip-dev=1.6.1-r1 \
-    readline-dev=8.0.4-r0 \
+    gcc='10.3.1_git20210424-r2' \
+    libc-dev='0.7.2-r3' \
+    libpng-dev='1.6.37-r1' \
+    libzip-dev='1.7.3-r2' \
+    readline-dev='8.1.0-r0' \
   && apk add --no-cache --virtual .build-deps \
-    ca-certificates=20191127-r4 \
-    cmake=3.17.2-r0 \
-    g++=9.3.0-r2 \
-    git=2.26.2-r0 \
-    make=4.3-r0
+    ca-certificates='20191127-r5' \
+    cmake='3.20.3-r0' \
+    g++='10.3.1_git20210424-r2' \
+    git='2.32.0-r0' \
+    make='4.3-r0'
 
 # Download and extract ImageMagick and ktools
 RUN wget -P /tmp/ "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
