@@ -15,7 +15,9 @@ jobs:
       - name: Set a job-wide environment variables
         run: |
           echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "DS_KTOOLS_VERSION=4.4.0" >> $GITHUB_ENV
           echo "GITHUB_JOB_NAME=build" >> $GITHUB_ENV
+          echo "IMAGEMAGICK_VERSION=6.9.12-19" >> $GITHUB_ENV
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -41,10 +43,19 @@ jobs:
           push: ${{ github.ref == 'refs/heads/master' }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:alpine
           cache-to: type=inline
+          build-args: |
+            DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
+            IMAGEMAGICK_VERSION=${{ env.IMAGEMAGICK_VERSION }}
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:alpine
+            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}-alpine
+            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
             ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:latest
             ghcr.io/${{ github.repository_owner }}/ktools:alpine
+            ghcr.io/${{ github.repository_owner }}/ktools:${{ env.DS_KTOOLS_VERSION }}
+            ghcr.io/${{ github.repository_owner }}/ktools:${{ env.DS_KTOOLS_VERSION }}-alpine
+            ghcr.io/${{ github.repository_owner }}/ktools:${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
             ghcr.io/${{ github.repository_owner }}/ktools:latest
       - name: Build a Debian image
         uses: docker/build-push-action@v2
@@ -56,9 +67,16 @@ jobs:
           push: ${{ github.ref == 'refs/heads/master' }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:debian
           cache-to: type=inline
+          build-args: |
+            DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
+            IMAGEMAGICK_VERSION=${{ env.IMAGEMAGICK_VERSION }}
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:debian
+            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}-debian
+            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
             ghcr.io/${{ github.repository_owner }}/ktools:debian
+            ghcr.io/${{ github.repository_owner }}/ktools:${{ env.DS_KTOOLS_VERSION }}-debian
+            ghcr.io/${{ github.repository_owner }}/ktools:${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
       - name: Prepare success Slack notification
         if: success()
         run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
