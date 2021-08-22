@@ -25,7 +25,7 @@ compiled on a more recent [GCC][].
 | `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | Absolute path to the [krane][] tool |
 | `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | Absolute path to the [ktech][] tool |
 | `DS_KTOOLS_VERSION`   | `4.4.0`                | [ktools][] version                  |
-| `IMAGEMAGICK_VERSION` | `6.9.11-3`             | [ImageMagick][] version             |
+| `IMAGEMAGICK_VERSION` | `6.9.12-19`            | [ImageMagick][] version             |
 
 ## Usage
 
