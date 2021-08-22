@@ -1,17 +1,15 @@
 # docker-ktools
 
-[![Docker Image Debian Size]](https://hub.docker.com/r/viktorpopkov/ktools)
-[![Docker Image Alpine Size]](https://hub.docker.com/r/viktorpopkov/ktools)
-[![GitHub Workflow CI Status][]](https://github.com/victorpopkov/docker-ktools/actions?query=workflow%3ACI)
-[![GitHub Workflow Publish Status][]](https://github.com/victorpopkov/docker-ktools/actions?query=workflow%3APublish)
+[![Debian Size](https://img.shields.io/docker/image-size/viktorpopkov/ktools/debian?label=debian%20size)](https://hub.docker.com/r/viktorpopkov/ktools)
+[![Alpine Size](https://img.shields.io/docker/image-size/viktorpopkov/ktools/alpine?label=alpine%20size)](https://hub.docker.com/r/viktorpopkov/ktools)
+[![CI](https://img.shields.io/github/workflow/status/victorpopkov/docker-ktools/CI?label=CI)](https://github.com/victorpopkov/docker-ktools/actions/workflows/ci.yml)
 
 ## Overview
 
 The [Docker][] images for the [ktools][] created by [@nsimplex][].
 
-This repository uses a forked version ([victorpopkov/ktools][]) which includes
-the [#13](https://github.com/nsimplex/ktools/pull/13) fix, so that it could be
-compiled on a more recent [GCC][].
+This repository uses a fork [victorpopkov/ktools][] as the original
+one does seem to be abandoned (the last commit was in 2016).
 
 - [Environment variables](#environment-variables)
 - [Usage](#usage)
@@ -109,13 +107,9 @@ PS:\> docker run --rm -v "${PWD}:/data/" viktorpopkov/ktools ktech --version
 Released under the [MIT License](https://opensource.org/licenses/MIT).
 
 [@nsimplex]: https://github.com/nsimplex
-[docker image alpine size]: https://img.shields.io/docker/image-size/viktorpopkov/ktools/debian?label=debian%20size
-[docker image debian size]: https://img.shields.io/docker/image-size/viktorpopkov/ktools/alpine?label=alpine%20size
 [docker]: https://www.docker.com/
 [don't starve]: https://www.klei.com/games/dont-starve
 [gcc]: https://gcc.gnu.org/
-[github workflow ci status]: https://img.shields.io/github/workflow/status/victorpopkov/docker-ktools/CI?label=CI
-[github workflow publish status]: https://img.shields.io/github/workflow/status/victorpopkov/docker-ktools/Publish?label=Publish
 [imagemagick]: https://imagemagick.org/index.php
 [krane]: https://github.com/nsimplex/ktools#krane
 [ktech]: https://github.com/nsimplex/ktools#ktech
