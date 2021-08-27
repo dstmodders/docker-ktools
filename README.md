@@ -22,8 +22,8 @@ one does seem to be abandoned (the last commit was in 2016).
 | --------------------- | ---------------------- | ----------------------------------- |
 | `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | Absolute path to the [krane][] tool |
 | `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | Absolute path to the [ktech][] tool |
-| `DS_KTOOLS_VERSION`   | `4.4.1`                | [ktools][] version                  |
-| `IMAGEMAGICK_VERSION` | `6.9.12-19`            | [ImageMagick][] version             |
+| `DS_KTOOLS_VERSION`   | `4.5.0`                | [ktools][] version                  |
+| `IMAGEMAGICK_VERSION` | `7.1.0-5`              | [ImageMagick][] version             |
 
 ## Usage
 
