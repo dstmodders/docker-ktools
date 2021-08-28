@@ -4,16 +4,18 @@
 [![Alpine Size](https://img.shields.io/docker/image-size/viktorpopkov/ktools/alpine?label=alpine%20size)](https://hub.docker.com/r/viktorpopkov/ktools)
 [![CI](https://img.shields.io/github/workflow/status/victorpopkov/docker-ktools/CI?label=CI)](https://github.com/victorpopkov/docker-ktools/actions/workflows/ci.yml)
 
+> This repository uses a fork [victorpopkov/ktools][] instead of the original
+> [nsimplex/ktools][]. You can use [v4.4.0][] to match the
+> [latest official release][], or [v4.4.1] to match the
+> [latest state][] of official `master` branch. See [releases][] to learn more.
+
 ## Overview
 
 The [Docker][] images for the [ktools][] created by [@nsimplex][].
 
-This repository uses a fork [victorpopkov/ktools][] as the original
-one does seem to be abandoned (the last commit was in 2016).
-
 - [Environment variables](#environment-variables)
 - [Usage](#usage)
-  - [Linux](#linux)
+  - [Linux & macOS](#linux--macos)
   - [Windows](#windows)
 
 ## Environment variables
@@ -29,7 +31,9 @@ one does seem to be abandoned (the last commit was in 2016).
 
 ```shell script
 $ cd <your data directory>
-$ docker pull viktorpopkov/ktools
+$ docker pull viktorpopkov/ktools # latest (recommended)
+$ docker pull viktorpopkov/ktools:4.4.0 # latest official release
+$ docker pull viktorpopkov/ktools:4.4.1 # latest state of official master branch
 ```
 
 ### Interactive Shell
@@ -51,7 +55,7 @@ $ docker run --rm \
     ktech --version
 ```
 
-### Linux
+### Linux & macOS
 
 #### Bash
 
@@ -114,4 +118,10 @@ Released under the [MIT License](https://opensource.org/licenses/MIT).
 [krane]: https://github.com/nsimplex/ktools#krane
 [ktech]: https://github.com/nsimplex/ktools#ktech
 [ktools]: https://github.com/nsimplex/ktools
+[latest official release]: https://github.com/nsimplex/ktools/releases/tag/4.4.0
+[latest state]: https://github.com/nsimplex/ktools/tree/a1d1362bdb2b9aa9146d7177fbf0e351eab414ba
+[nsimplex/ktools]: https://github.com/nsimplex/ktools
+[releases]: https://github.com/victorpopkov/ktools/releases
+[v4.4.0]: https://github.com/victorpopkov/ktools/releases/tag/4.4.0
+[v4.4.1]: https://github.com/victorpopkov/ktools/releases/tag/v4.4.1
 [victorpopkov/ktools]: https://github.com/victorpopkov/ktools
