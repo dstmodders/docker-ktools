@@ -5,6 +5,8 @@ ARG IMAGEMAGICK_VERSION="7.1.0-5"
 
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
+ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
+ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
