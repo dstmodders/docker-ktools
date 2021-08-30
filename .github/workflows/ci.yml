@@ -15,28 +15,16 @@ jobs:
         ktools:
           - ktools-version: 4.4.0
             imagemagick-version: 6.9.12-19
+            latest: false
             root: ./440
-            extra-tags:
-              alpine: ''
-              debian: ''
           - ktools-version: 4.4.1
             imagemagick-version: 6.9.12-19
+            latest: false
             root: ./latest
-            extra-tags:
-              alpine: ''
-              debian: ''
           - ktools-version: 4.5.0
             imagemagick-version: 7.1.0-5
+            latest: true
             root: ./latest
-            extra-tags:
-              alpine: |
-                ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:alpine
-                ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:latest
-                ghcr.io/${{ github.repository_owner }}/ktools:alpine
-                ghcr.io/${{ github.repository_owner }}/ktools:latest
-              debian: |
-                ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:debian
-                ghcr.io/${{ github.repository_owner }}/ktools:debian
     steps:
       - name: Check out
         uses: actions/checkout@v2
@@ -64,6 +52,20 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
+      - name: Docker meta for an Alpine image
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
+            ghcr.io/${{ github.repository_owner }}/ktools
+          flavor: |
+            latest=${{ matrix.ktools.latest }}
+          tags: |
+            type=raw,value=${{ env.DS_KTOOLS_VERSION }}
+            type=raw,value=${{ env.DS_KTOOLS_VERSION }}-alpine
+            type=raw,value=${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
+            ${{ matrix.ktools.latest && 'type=raw,value=alpine' || '' }}
       - name: Build an Alpine image
         uses: docker/build-push-action@v2
         with:
@@ -77,14 +79,21 @@ jobs:
           build-args: |
             DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
             IMAGEMAGICK_VERSION=${{ env.IMAGEMAGICK_VERSION }}
+          tags: ${{ steps.meta.outputs.tags }}
+      - name: Docker meta for a Debian image
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
+            ghcr.io/${{ github.repository_owner }}/ktools
+          flavor: |
+            latest=${{ matrix.ktools.latest }}
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}
-            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}-alpine
-            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
-            ghcr.io/${{ github.repository_owner }}/ktools:${{ env.DS_KTOOLS_VERSION }}
-            ghcr.io/${{ github.repository_owner }}/ktools:${{ env.DS_KTOOLS_VERSION }}-alpine
-            ghcr.io/${{ github.repository_owner }}/ktools:${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
-            ${{ matrix.ktools.extra-tags.alpine }}
+            type=raw,value=${{ env.DS_KTOOLS_VERSION }}
+            type=raw,value=${{ env.DS_KTOOLS_VERSION }}-debian
+            type=raw,value=${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
+            ${{ matrix.ktools.latest && 'type=raw,value=debian' || '' }}
       - name: Build a Debian image
         uses: docker/build-push-action@v2
         with:
@@ -98,12 +107,7 @@ jobs:
           build-args: |
             DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
             IMAGEMAGICK_VERSION=${{ env.IMAGEMAGICK_VERSION }}
-          tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}-debian
-            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
-            ghcr.io/${{ github.repository_owner }}/ktools:${{ env.DS_KTOOLS_VERSION }}-debian
-            ghcr.io/${{ github.repository_owner }}/ktools:${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
-            ${{ matrix.ktools.extra-tags.debian }}
+          tags: ${{ steps.meta.outputs.tags }}
       - name: Prepare success Slack notification
         if: success()
         run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
