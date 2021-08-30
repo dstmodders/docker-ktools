@@ -15,7 +15,7 @@ jobs:
         ktools:
           - ktools-version: 4.5.0
             imagemagick-version: 7.1.0-5
-            root: ./
+            root: ./latest
             extra-tags:
               alpine: |
                 ${{ secrets.DOCKER_HUB_USERNAME }}/ktools:alpine
