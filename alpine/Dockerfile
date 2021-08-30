@@ -1,44 +1,56 @@
 FROM alpine:3.14.1
 
-ARG DS_KTOOLS_VERSION="4.5.0"
-ARG IMAGEMAGICK_VERSION="7.1.0-5"
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
+ARG IMAGEMAGICK_VERSION="7.1.0-5"
+ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
+
+WORKDIR /tmp/
+# hadolint ignore=DL3003
+RUN apk add --no-cache \
+    libgcc='10.3.1_git20210424-r2' \
+    libgomp='10.3.1_git20210424-r2' \
+    libpng-dev='1.6.37-r1' \
+    libstdc++='10.3.1_git20210424-r2' \
+    libzip-dev='1.7.3-r2' \
+  && apk add --no-cache --virtual .imagemagick-deps \
+    cmake='3.20.3-r0' \
+    g++='10.3.1_git20210424-r2' \
+    libc-dev='0.7.2-r3' \
+    make='4.3-r0' \
+  # ImageMagick
+  && wget "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
+  && tar -xf "./ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
+  && cd "./ImageMagick-${IMAGEMAGICK_VERSION}/" \
+  && ./configure --with-png \
+  && make \
+  && make install \
+  && ldconfig /usr/local/lib/ \
+  # clean
+  && apk del .imagemagick-deps \
+  && rm -Rf /tmp/* \
+  # smoke test
+  && identify -version
+
+ARG DS_KTOOLS_VERSION="4.5.0"
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
 ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
-ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
-
-SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
-
-# Install dependencies
-RUN apk update \
-  && apk add --no-cache \
-    gcc='10.3.1_git20210424-r2' \
-    libc-dev='0.7.2-r3' \
-    libpng-dev='1.6.37-r1' \
-    libzip-dev='1.7.3-r2' \
-    readline-dev='8.1.0-r0' \
-  && apk add --no-cache --virtual .build-deps \
-    cmake='3.20.3-r0' \
-    g++='10.3.1_git20210424-r2' \
-    make='4.3-r0'
-
-# Download and extract ImageMagick and ktools
-RUN wget -P /tmp/ "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
-  && tar xf "/tmp/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" -C /tmp/ \
-  && wget -P /tmp/ "https://github.com/victorpopkov/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
-  && tar xzf "/tmp/v${DS_KTOOLS_VERSION}.tar.gz" -C /tmp/
-
-# Build and install ImageMagick
-WORKDIR /tmp/ImageMagick-${IMAGEMAGICK_VERSION}/
-RUN ./configure \
-  && make \
-  && make install \
-  && ldconfig /usr/local/lib/
 
 # Install ktools
-WORKDIR /tmp/ktools-${DS_KTOOLS_VERSION}/
-RUN cmake \
+WORKDIR /tmp/
+# hadolint ignore=DL3003
+RUN apk add --no-cache --virtual .ktools-deps \
+    cmake='3.20.3-r0' \
+    g++='10.3.1_git20210424-r2' \
+    libc-dev='0.7.2-r3' \
+    make='4.3-r0' \
+    readline-dev='8.1.0-r0' \
+  # ktools
+  && wget "https://github.com/victorpopkov/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
+  && tar -xzf "./v${DS_KTOOLS_VERSION}.tar.gz" \
+  && cd "/tmp/ktools-${DS_KTOOLS_VERSION}/" \
+  && cmake \
     -DImageMagick_Magick++_LIBRARY="$(pkg-config --variable=libdir Magick++)/lib$(pkg-config --variable=libname Magick++).so" \
     -DImageMagick_MagickCore_INCLUDE_DIR="$(pkg-config --cflags-only-I MagickCore | tail -c+3)" \
     -DImageMagick_MagickCore_LIBRARY="$(pkg-config --variable=libdir MagickCore)/lib$(pkg-config --variable=libname MagickCore).so" \
@@ -47,10 +59,13 @@ RUN cmake \
     . \
   && ./configure \
   && make \
-  && make install
-
-# Remove dependencies and temporary files
-RUN apk del .build-deps \
-  && rm -Rf /tmp/*
+  && make install \
+  # clean
+  && apk del .ktools-deps \
+  && rm -Rf /tmp/* \
+  # smoke tests
+  && which krane ktech \
+  && krane --version \
+  && ktech --version
 
 WORKDIR /data/
