@@ -7,7 +7,9 @@ ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
 
 WORKDIR /tmp/
 # hadolint ignore=DL3003
-RUN apt-get update \
+RUN groupadd --gid 1000 ktools \
+  && useradd --uid 1000 --gid ktools --shell /bin/bash --create-home ktools \
+  && apt-get update \
   && apt-get install -y --no-install-recommends \
     build-essential='12.9' \
     ca-certificates='20210119' \

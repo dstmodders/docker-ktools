@@ -7,7 +7,9 @@ ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
 
 WORKDIR /tmp/
 # hadolint ignore=DL3003
-RUN apk add --no-cache \
+RUN addgroup -g 1000 ktools \
+  && adduser -u 1000 -G ktools -s /bin/sh -D ktools \
+  && apk add --no-cache \
     libgcc='10.3.1_git20210424-r2' \
     libgomp='10.3.1_git20210424-r2' \
     libpng-dev='1.6.37-r1' \
