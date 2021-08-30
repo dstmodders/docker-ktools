@@ -84,7 +84,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       - name: Docker meta for a Debian image
-        id: meta
+        id: debian-meta
         uses: docker/metadata-action@v3
         with:
           images: |
@@ -112,8 +112,8 @@ jobs:
           build-args: |
             DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
             IMAGEMAGICK_VERSION=${{ env.IMAGEMAGICK_VERSION }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.debian-meta.outputs.tags }}
+          labels: ${{ steps.debian-meta.outputs.labels }}
       - name: Prepare success Slack notification
         if: success()
         run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
