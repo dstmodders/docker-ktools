@@ -41,6 +41,7 @@ $ docker pull viktorpopkov/ktools:4.4.1 # latest state of official master branch
 ```shell script
 $ docker run --rm --interactive --tty \
     --mount src='<your data directory>',target='/data/',type=bind \
+    --user='ktools' \
     --workdir='/data/' \
     viktorpopkov/ktools
 ```
@@ -50,6 +51,7 @@ $ docker run --rm --interactive --tty \
 ```shell script
 $ docker run --rm \
     --mount src='<your data directory>',target='/data/',type=bind \
+    --user='ktools' \
     --workdir='/data/' \
     viktorpopkov/ktools \
     ktech --version
@@ -64,16 +66,17 @@ $ docker run --rm \
 ```shell script
 $ docker run --rm --interactive --tty \
     --mount src="$(pwd)",target='/data/',type=bind \
+    --user='ktools' \
     --workdir='/data/' \
     viktorpopkov/ktools
 # or
-$ docker run --rm -itv "$(pwd):/data/" viktorpopkov/ktools
+$ docker run --rm -itv "$(pwd):/data/" -u ktools viktorpopkov/ktools
 ```
 
 ##### Non-interactive Shell
 
 ```shell script
-$ docker run --rm -v "$(pwd):/data/" viktorpopkov/ktools ktech --version
+$ docker run --rm -v "$(pwd):/data/" -u ktools viktorpopkov/ktools ktech --version
 ```
 
 ### Windows
@@ -83,13 +86,13 @@ $ docker run --rm -v "$(pwd):/data/" viktorpopkov/ktools ktech --version
 ##### Interactive Shell
 
 ```cmd
-> docker run --rm -itv "%CD%:/data/" viktorpopkov/ktools
+> docker run --rm -itv "%CD%:/data/" -u ktools viktorpopkov/ktools
 ```
 
 ##### Non-interactive Shell
 
 ```cmd
-> docker run --rm -v "%CD%:/data/" viktorpopkov/ktools ktech --version
+> docker run --rm -v "%CD%:/data/" -u ktools viktorpopkov/ktools ktech --version
 ```
 
 #### PowerShell
@@ -97,13 +100,13 @@ $ docker run --rm -v "$(pwd):/data/" viktorpopkov/ktools ktech --version
 ##### Interactive Shell
 
 ```powershell
-PS:\> docker run --rm -itv "${PWD}:/data/" viktorpopkov/ktools
+PS:\> docker run --rm -itv "${PWD}:/data/" -u ktools viktorpopkov/ktools
 ```
 
 ##### Non-interactive Shell
 
 ```powershell
-PS:\> docker run --rm -v "${PWD}:/data/" viktorpopkov/ktools ktech --version
+PS:\> docker run --rm -v "${PWD}:/data/" -u ktools viktorpopkov/ktools ktech --version
 ```
 
 ## License
