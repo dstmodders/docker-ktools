@@ -52,6 +52,35 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
+      - name: Docker meta for a Debian image
+        id: debian-meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
+            ghcr.io/${{ github.repository_owner }}/ktools
+          labels: |
+            maintainer=victor@popkov.me
+          tags: |
+            type=raw,value=${{ env.DS_KTOOLS_VERSION }}
+            type=raw,value=${{ env.DS_KTOOLS_VERSION }}-debian
+            type=raw,value=${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
+            ${{ matrix.ktools.latest && 'type=raw,value=debian' || '' }}
+      - name: Build a Debian image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ${{ env.ROOT }}/debian/Dockerfile
+          platforms: linux/amd64
+          pull: true
+          push: ${{ !env.ACT && github.ref == 'refs/heads/master' }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
+          cache-to: type=inline
+          build-args: |
+            DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
+            IMAGEMAGICK_VERSION=${{ env.IMAGEMAGICK_VERSION }}
+          tags: ${{ steps.debian-meta.outputs.tags }}
+          labels: ${{ steps.debian-meta.outputs.labels }}
       - name: Docker meta for an Alpine image
         id: alpine-meta
         uses: docker/metadata-action@v3
@@ -83,35 +112,6 @@ jobs:
             IMAGEMAGICK_VERSION=${{ env.IMAGEMAGICK_VERSION }}
           tags: ${{ steps.alpine-meta.outputs.tags }}
           labels: ${{ steps.alpine-meta.outputs.labels }}
-      - name: Docker meta for a Debian image
-        id: debian-meta
-        uses: docker/metadata-action@v3
-        with:
-          images: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
-            ghcr.io/${{ github.repository_owner }}/ktools
-          labels: |
-            maintainer=victor@popkov.me
-          tags: |
-            type=raw,value=${{ env.DS_KTOOLS_VERSION }}
-            type=raw,value=${{ env.DS_KTOOLS_VERSION }}-debian
-            type=raw,value=${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
-            ${{ matrix.ktools.latest && 'type=raw,value=debian' || '' }}
-      - name: Build a Debian image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ${{ env.ROOT }}/debian/Dockerfile
-          platforms: linux/amd64
-          pull: true
-          push: ${{ !env.ACT && github.ref == 'refs/heads/master' }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
-          cache-to: type=inline
-          build-args: |
-            DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
-            IMAGEMAGICK_VERSION=${{ env.IMAGEMAGICK_VERSION }}
-          tags: ${{ steps.debian-meta.outputs.tags }}
-          labels: ${{ steps.debian-meta.outputs.labels }}
       - name: Prepare success Slack notification
         if: success()
         run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
