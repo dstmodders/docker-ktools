@@ -90,8 +90,6 @@ jobs:
           images: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
             ghcr.io/${{ github.repository_owner }}/ktools
-          flavor: |
-            latest=${{ matrix.ktools.latest }}
           labels: |
             maintainer=victor@popkov.me
           tags: |
