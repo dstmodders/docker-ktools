@@ -50,7 +50,7 @@ RUN apk add --no-cache --virtual .ktools-deps \
     patch='2.7.6-r7' \
     readline-dev='8.1.0-r0' \
   # ktools
-  && wget "https://github.com/victorpopkov/ktools/archive/refs/tags/${DS_KTOOLS_VERSION}.tar.gz" \
+  && wget "https://github.com/nsimplex/ktools/archive/refs/tags/${DS_KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./${DS_KTOOLS_VERSION}.tar.gz" \
   && wget https://github.com/victorpopkov/ktools/commit/47f38381671e03455eab193a1d3a88e11666af99.patch \
   && cd "/tmp/ktools-${DS_KTOOLS_VERSION}/" \
