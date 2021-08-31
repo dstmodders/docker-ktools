@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - develop
-      - master
+      - main
 
 jobs:
   build:
@@ -72,7 +72,6 @@ jobs:
             type=raw,value=${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
             ${{ matrix.ktools.latest && 'type=raw,value=debian' || '' }}
       - name: Build a Debian image
-        if: ${{ !env.ACT }}
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -80,7 +79,7 @@ jobs:
           platforms: linux/amd64
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/master' }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ matrix.ktools.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
           cache-to: type=inline
           build-args: |
             DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
@@ -106,7 +105,6 @@ jobs:
             ${{ matrix.ktools.latest && 'type=raw,value=alpine' || '' }}
             ${{ (matrix.ktools.latest && matrix.ktools.official) && 'type=raw,prefix=,suffix=,value=official' || '' }}
       - name: Build an Alpine image
-        if: ${{ !env.ACT }}
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -114,7 +112,7 @@ jobs:
           platforms: linux/amd64
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/master' }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ matrix.ktools.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
           cache-to: type=inline
           build-args: |
             DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
