@@ -29,13 +29,13 @@
 
 ## Usage
 
-Fork releases (recommended):
+Fork [releases][] (recommended):
 
 ```shell
 $ docker pull viktorpopkov/ktools # same tag: 4.5.0-imagemagick-7.1.0-5-alpine
 ```
 
-You can also pick any official release:
+Or you can also pick one of the [official releases][]:
 
 ```shell
 $ docker pull viktorpopkov/ktools:official # same tag: official-4.4.0-imagemagick-6.9.12-19-alpine

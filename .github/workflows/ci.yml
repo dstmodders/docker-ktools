@@ -78,7 +78,7 @@ jobs:
           file: ${{ env.ROOT }}/debian/Dockerfile
           platforms: linux/amd64
           pull: true
-          push: ${{ !env.ACT && github.ref == 'refs/heads/master' }}
+          push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ matrix.ktools.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
           cache-to: type=inline
           build-args: |
@@ -111,7 +111,7 @@ jobs:
           file: ${{ env.ROOT }}/alpine/Dockerfile
           platforms: linux/amd64
           pull: true
-          push: ${{ !env.ACT && github.ref == 'refs/heads/master' }}
+          push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
           cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ matrix.ktools.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
           cache-to: type=inline
           build-args: |
