@@ -5,13 +5,13 @@
 [![CI](https://img.shields.io/github/workflow/status/victorpopkov/docker-ktools/CI?label=CI)](https://github.com/victorpopkov/docker-ktools/actions/workflows/ci.yml)
 
 > This repository uses a fork [victorpopkov/ktools][] instead of the original
-> [nsimplex/ktools][]. You can use [v4.4.0][] to match the
-> [latest official release][], or [v4.4.1] to match the
-> [latest state][] of official `master` branch. See [releases][] to learn more.
+> [nsimplex/ktools][]. All tags prefixed with "official" point to
+> [official releases][]. See [releases][] and [tags][] to learn more.
 
 ## Overview
 
-The [Docker][] images for the [ktools][] created by [@nsimplex][].
+[Docker][] images for modding tools of Klei Entertainment's game
+[Don't Starve][].
 
 - [Environment variables](#environment-variables)
 - [Usage](#usage)
@@ -29,84 +29,69 @@ The [Docker][] images for the [ktools][] created by [@nsimplex][].
 
 ## Usage
 
-```shell script
-$ cd <your data directory>
-$ docker pull viktorpopkov/ktools # latest (recommended)
-$ docker pull viktorpopkov/ktools:4.4.0 # latest official release
-$ docker pull viktorpopkov/ktools:4.4.1 # latest state of official master branch
+Fork releases (recommended):
+
+```shell
+$ docker pull viktorpopkov/ktools # same tag: 4.5.0-imagemagick-7.1.0-5-alpine
 ```
 
-### Interactive Shell
+You can also pick any official release:
 
-```shell script
-$ docker run --rm --interactive --tty \
-    --mount src='<your data directory>',target='/data/',type=bind \
-    --user='ktools' \
-    --workdir='/data/' \
+```shell
+$ docker pull viktorpopkov/ktools:official # same tag: official-4.4.0-imagemagick-6.9.12-19-alpine
+```
+
+See [tags][] for all available versions.
+
+### Interactive
+
+```shell
+$ docker run --rm --user='ktools' --interactive --tty \
+    --mount src='/path/to/your/data/',target='/data/',type=bind \
     viktorpopkov/ktools
 ```
 
-### Non-interactive Shell
+The same, but shorter:
 
-```shell script
-$ docker run --rm \
-    --mount src='<your data directory>',target='/data/',type=bind \
-    --user='ktools' \
-    --workdir='/data/' \
+```shell
+$ docker run --rm -u ktools -itv '/path/to/your/data/:/data/' viktorpopkov/ktools
+```
+
+### Non-interactive
+
+```shell
+$ docker run --rm --user='ktools' \
+    --mount src='/path/to/your/data/',target='/data/',type=bind \
     viktorpopkov/ktools \
     ktech --version
 ```
 
-### Linux & macOS
+The same, but shorter:
 
-#### Bash
-
-##### Interactive Shell
-
-```shell script
-$ docker run --rm --interactive --tty \
-    --mount src="$(pwd)",target='/data/',type=bind \
-    --user='ktools' \
-    --workdir='/data/' \
-    viktorpopkov/ktools
-# or
-$ docker run --rm -itv "$(pwd):/data/" -u ktools viktorpopkov/ktools
+```shell
+$ docker run --rm -u ktools -v '/path/to/your/data/:/data/' viktorpopkov/ktools ktech --version
 ```
 
-##### Non-interactive Shell
+### Linux & macOS
 
-```shell script
-$ docker run --rm -v "$(pwd):/data/" -u ktools viktorpopkov/ktools ktech --version
+#### Shell/Bash
+
+```shell
+$ docker run --rm -u ktools -itv "$(pwd):/data/" viktorpopkov/ktools
 ```
 
 ### Windows
 
 #### CMD
 
-##### Interactive Shell
-
 ```cmd
-> docker run --rm -itv "%CD%:/data/" -u ktools viktorpopkov/ktools
-```
-
-##### Non-interactive Shell
-
-```cmd
-> docker run --rm -v "%CD%:/data/" -u ktools viktorpopkov/ktools ktech --version
+> docker run --rm -u ktools -itv "%CD%:/data/" viktorpopkov/ktools
 ```
 
 #### PowerShell
 
-##### Interactive Shell
-
 ```powershell
-PS:\> docker run --rm -itv "${PWD}:/data/" -u ktools viktorpopkov/ktools
-```
-
-##### Non-interactive Shell
-
-```powershell
-PS:\> docker run --rm -v "${PWD}:/data/" -u ktools viktorpopkov/ktools ktech --version
+PS:\> docker run --rm -u ktools -itv "${PWD}:/data/" viktorpopkov/ktools
 ```
 
 ## License
@@ -121,10 +106,12 @@ Released under the [MIT License](https://opensource.org/licenses/MIT).
 [krane]: https://github.com/nsimplex/ktools#krane
 [ktech]: https://github.com/nsimplex/ktools#ktech
 [ktools]: https://github.com/nsimplex/ktools
-[latest official release]: https://github.com/nsimplex/ktools/releases/tag/4.4.0
 [latest state]: https://github.com/nsimplex/ktools/tree/a1d1362bdb2b9aa9146d7177fbf0e351eab414ba
 [nsimplex/ktools]: https://github.com/nsimplex/ktools
+[official releases]: https://github.com/nsimplex/ktools/releases
+[official]: https://github.com/nsimplex/ktools/releases
 [releases]: https://github.com/victorpopkov/ktools/releases
+[tags]: https://hub.docker.com/r/viktorpopkov/ktools/tags
 [v4.4.0]: https://github.com/victorpopkov/ktools/releases/tag/4.4.0
 [v4.4.1]: https://github.com/victorpopkov/ktools/releases/tag/v4.4.1
 [victorpopkov/ktools]: https://github.com/victorpopkov/ktools
