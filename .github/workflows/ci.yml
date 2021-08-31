@@ -16,7 +16,7 @@ jobs:
           - ktools-version: 4.4.0
             imagemagick-version: 6.9.12-19
             latest: false
-            root: ./440
+            root: ./official
           - ktools-version: 4.4.1
             imagemagick-version: 6.9.12-19
             latest: false
