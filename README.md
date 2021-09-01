@@ -41,7 +41,7 @@ Or you can also pick one of the [official releases][]:
 $ docker pull viktorpopkov/ktools:official # same tag: official-4.4.0-imagemagick-6.9.12-19-alpine
 ```
 
-See [tags][] for all available versions.
+See [tags][] for a list of all available versions.
 
 ### Interactive
 
