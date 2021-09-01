@@ -1,5 +1,5 @@
 ### Intellij ###
 .idea/
 
-### Project ###
-.github/slack*.json
+### VisualStudioCode ###
+.vscode/
