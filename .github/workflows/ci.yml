@@ -12,7 +12,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        ktools:
+        image:
           - ktools-version: 4.3.0
             imagemagick-version: 6.9.12-19
             latest: false
@@ -44,10 +44,10 @@ jobs:
       - name: Set a job-wide environment variables
         run: |
           echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "DS_KTOOLS_VERSION=${{ matrix.ktools.ktools-version }}" >> $GITHUB_ENV
+          echo "DS_KTOOLS_VERSION=${{ matrix.image.ktools-version }}" >> $GITHUB_ENV
           echo "GITHUB_JOB_NAME=build" >> $GITHUB_ENV
-          echo "IMAGEMAGICK_VERSION=${{ matrix.ktools.imagemagick-version }}" >> $GITHUB_ENV
-          echo "ROOT=${{ matrix.ktools.root }}" >> $GITHUB_ENV
+          echo "IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick-version }}" >> $GITHUB_ENV
+          echo "ROOT=${{ matrix.image.root }}" >> $GITHUB_ENV
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -73,14 +73,14 @@ jobs:
             ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
             ghcr.io/${{ github.repository_owner }}/ktools
           flavor: |
-            prefix=${{ matrix.ktools.official && 'official-' || '' }},onlatest=${{ matrix.ktools.official }}
+            prefix=${{ matrix.image.official && 'official-' || '' }},onlatest=${{ matrix.image.official }}
           labels: |
             maintainer=victor@popkov.me
           tags: |
             type=raw,value=${{ env.DS_KTOOLS_VERSION }}
             type=raw,value=${{ env.DS_KTOOLS_VERSION }}-debian
             type=raw,value=${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
-            ${{ matrix.ktools.latest && 'type=raw,value=debian' || '' }}
+            ${{ matrix.image.latest && 'type=raw,value=debian' || '' }}
       - name: Build a Debian image
         uses: docker/build-push-action@v2
         with:
@@ -89,7 +89,7 @@ jobs:
           platforms: linux/amd64
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ matrix.ktools.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
           cache-to: type=inline
           build-args: |
             DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
@@ -104,16 +104,16 @@ jobs:
             ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
             ghcr.io/${{ github.repository_owner }}/ktools
           flavor: |
-            latest=${{ matrix.ktools.latest }}
-            prefix=${{ matrix.ktools.official && 'official-' || '' }},onlatest=${{ matrix.ktools.official }}
+            latest=${{ matrix.image.latest }}
+            prefix=${{ matrix.image.official && 'official-' || '' }},onlatest=${{ matrix.image.official }}
           labels: |
             maintainer=victor@popkov.me
           tags: |
             type=raw,value=${{ env.DS_KTOOLS_VERSION }}
             type=raw,value=${{ env.DS_KTOOLS_VERSION }}-alpine
             type=raw,value=${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
-            ${{ matrix.ktools.latest && 'type=raw,value=alpine' || '' }}
-            ${{ (matrix.ktools.latest && matrix.ktools.official) && 'type=raw,prefix=,suffix=,value=official' || '' }}
+            ${{ matrix.image.latest && 'type=raw,value=alpine' || '' }}
+            ${{ (matrix.image.latest && matrix.image.official) && 'type=raw,prefix=,suffix=,value=official' || '' }}
       - name: Build an Alpine image
         uses: docker/build-push-action@v2
         with:
@@ -122,7 +122,7 @@ jobs:
           platforms: linux/amd64
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ matrix.ktools.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
           cache-to: type=inline
           build-args: |
             DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
