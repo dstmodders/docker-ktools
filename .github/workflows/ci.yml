@@ -13,6 +13,16 @@ jobs:
       max-parallel: 1
       matrix:
         ktools:
+          - ktools-version: 4.3.0
+            imagemagick-version: 6.9.12-19
+            latest: false
+            official: true
+            root: ./official
+          - ktools-version: 4.3.1
+            imagemagick-version: 6.9.12-19
+            latest: false
+            official: true
+            root: ./official
           - ktools-version: 4.4.0
             imagemagick-version: 6.9.12-19
             latest: true
