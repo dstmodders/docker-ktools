@@ -2,7 +2,7 @@ FROM alpine:3.14.1
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
-ARG IMAGEMAGICK_VERSION="7.1.0-5"
+ARG IMAGEMAGICK_VERSION="7.1.0-7"
 ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
 
 WORKDIR /tmp/
@@ -34,7 +34,7 @@ RUN addgroup -g 1000 ktools \
   # smoke test
   && identify -version
 
-ARG DS_KTOOLS_VERSION="4.5.0"
+ARG DS_KTOOLS_VERSION="4.5.1"
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
 ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"

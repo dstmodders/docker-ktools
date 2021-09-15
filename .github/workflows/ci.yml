@@ -34,7 +34,12 @@ jobs:
             official: false
             root: ./latest
           - ktools-version: 4.5.0
-            imagemagick-version: 7.1.0-5
+            imagemagick-version: 7.1.0-7
+            latest: false
+            official: false
+            root: ./latest
+          - ktools-version: 4.5.1
+            imagemagick-version: 7.1.0-7
             latest: true
             official: false
             root: ./latest

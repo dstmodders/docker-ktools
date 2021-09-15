@@ -2,7 +2,7 @@ FROM debian:bullseye-slim
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ARG IMAGEMAGICK_VERSION="7.1.0-5"
+ARG IMAGEMAGICK_VERSION="7.1.0-7"
 ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
 
 WORKDIR /tmp/
@@ -46,7 +46,7 @@ RUN groupadd --gid 1000 ktools \
   # smoke test
   && identify -version
 
-ARG DS_KTOOLS_VERSION="4.5.0"
+ARG DS_KTOOLS_VERSION="4.5.1"
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
 ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
