@@ -2,7 +2,7 @@
 
 [![Debian Size](https://img.shields.io/docker/image-size/viktorpopkov/ktools/debian?label=debian%20size)](https://hub.docker.com/r/viktorpopkov/ktools)
 [![Alpine Size](https://img.shields.io/docker/image-size/viktorpopkov/ktools/alpine?label=alpine%20size)](https://hub.docker.com/r/viktorpopkov/ktools)
-[![CI](https://img.shields.io/github/workflow/status/victorpopkov/docker-ktools/CI?label=CI)](https://github.com/victorpopkov/docker-ktools/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/workflow/status/victorpopkov/docker-ktools/CI?label=ci)](https://github.com/victorpopkov/docker-ktools/actions/workflows/ci.yml)
 
 > This repository uses a fork [victorpopkov/ktools][] instead of the original
 > [nsimplex/ktools][]. All tags prefixed with "official" point to
@@ -20,19 +20,19 @@
 
 ## Environment variables
 
-| Name                  | Value                  | Description                         |
-| --------------------- | ---------------------- | ----------------------------------- |
-| `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | Absolute path to the [krane][] tool |
-| `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | Absolute path to the [ktech][] tool |
-| `DS_KTOOLS_VERSION`   | `4.5.0`                | [ktools][] version                  |
-| `IMAGEMAGICK_VERSION` | `7.1.0-5`              | [ImageMagick][] version             |
+| Name                  | Value                  | Description             |
+| --------------------- | ---------------------- | ----------------------- |
+| `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | Path to [krane][]       |
+| `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | Path to [ktech][]       |
+| `DS_KTOOLS_VERSION`   | `4.5.1`                | [ktools][] version      |
+| `IMAGEMAGICK_VERSION` | `7.1.0-7`              | [ImageMagick][] version |
 
 ## Usage
 
 Fork [releases][] (recommended):
 
 ```shell
-$ docker pull viktorpopkov/ktools # same tag: 4.5.0-imagemagick-7.1.0-5-alpine
+$ docker pull viktorpopkov/ktools # same tag: 4.5.1-imagemagick-7.1.0-7-alpine
 ```
 
 Or you can also pick one of the [official releases][]:
