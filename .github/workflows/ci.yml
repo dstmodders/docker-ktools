@@ -21,6 +21,7 @@ jobs:
           echo "::set-output name=matrix::$(jq -cM . <<< ${JSON})"
 
   build:
+    needs: prepare
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
