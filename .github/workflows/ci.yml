@@ -18,14 +18,14 @@ jobs:
         id: set-matrix
         run: |
           JSON=$(cat ./versions.json)
-          echo "::set-output name=matrix::${JSON//'%'/'%25'}"
+          echo "::set-output name=matrix::$(jq -cM . <<< ${JSON})"
 
   build:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
       matrix:
-        image: ${{ fromJson(needs.prepare.outputs.matrix) }}
+        image: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
       - name: Check out
         uses: actions/checkout@v2
