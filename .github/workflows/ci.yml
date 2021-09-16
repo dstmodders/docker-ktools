@@ -62,7 +62,7 @@ jobs:
             ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
             ghcr.io/${{ github.repository_owner }}/ktools
           flavor: |
-            prefix=${{ matrix.image.official && 'official-' || '' }},onlatest=${{ matrix.image.official }}
+            prefix=${{ matrix.image.official && 'official-' || '' }},onlatest=${{ matrix.image.official || 'false' }}
           labels: |
             maintainer=victor@popkov.me
           tags: |
@@ -94,7 +94,7 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/ktools
           flavor: |
             latest=${{ matrix.image.latest || 'false' }}
-            prefix=${{ matrix.image.official && 'official-' || '' }},onlatest=${{ matrix.image.official }}
+            prefix=${{ matrix.image.official && 'official-' || '' }},onlatest=${{ matrix.image.official || 'false' }}
           labels: |
             maintainer=victor@popkov.me
           tags: |
