@@ -7,51 +7,34 @@ on:
       - main
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+      - name: Set matrix
+        id: set-matrix
+        run: |
+          JSON=$(cat ./versions.json)
+          echo "::set-output name=matrix::${JSON//'%'/'%25'}"
+
   build:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
       matrix:
-        image:
-          - ktools-version: 4.3.0
-            imagemagick-version: 6.9.12-19
-            latest: false
-            official: true
-            root: ./official
-          - ktools-version: 4.3.1
-            imagemagick-version: 6.9.12-19
-            latest: false
-            official: true
-            root: ./official
-          - ktools-version: 4.4.0
-            imagemagick-version: 6.9.12-19
-            latest: true
-            official: true
-            root: ./official
-          - ktools-version: 4.4.1
-            imagemagick-version: 6.9.12-19
-            latest: false
-            official: false
-            root: ./latest
-          - ktools-version: 4.5.0
-            imagemagick-version: 7.1.0-7
-            latest: false
-            official: false
-            root: ./latest
-          - ktools-version: 4.5.1
-            imagemagick-version: 7.1.0-7
-            latest: true
-            official: false
-            root: ./latest
+        image: ${{ fromJson(needs.prepare.outputs.matrix) }}
     steps:
       - name: Check out
         uses: actions/checkout@v2
       - name: Set a job-wide environment variables
         run: |
           echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "DS_KTOOLS_VERSION=${{ matrix.image.ktools-version }}" >> $GITHUB_ENV
+          echo "DS_KTOOLS_VERSION=${{ matrix.image.version }}" >> $GITHUB_ENV
           echo "GITHUB_JOB_NAME=build" >> $GITHUB_ENV
-          echo "IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick-version }}" >> $GITHUB_ENV
+          echo "IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick }}" >> $GITHUB_ENV
           echo "ROOT=${{ matrix.image.root }}" >> $GITHUB_ENV
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
