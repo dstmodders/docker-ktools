@@ -93,7 +93,7 @@ jobs:
             ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
             ghcr.io/${{ github.repository_owner }}/ktools
           flavor: |
-            latest=${{ matrix.image.latest }}
+            latest=${{ matrix.image.latest || 'false' }}
             prefix=${{ matrix.image.official && 'official-' || '' }},onlatest=${{ matrix.image.official }}
           labels: |
             maintainer=victor@popkov.me
