@@ -59,7 +59,7 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
+            ${{ github.repository_owner }}/ktools
             ghcr.io/${{ github.repository_owner }}/ktools
           flavor: |
             prefix=${{ matrix.image.official && 'official-' || '' }},onlatest=${{ matrix.image.official || 'false' }}
@@ -78,7 +78,7 @@ jobs:
           platforms: linux/amd64
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
+          cache-from: type=registry,ref=${{ github.repository_owner }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
           cache-to: type=inline
           build-args: |
             DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
@@ -90,7 +90,7 @@ jobs:
         uses: docker/metadata-action@v3
         with:
           images: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/ktools
+            ${{ github.repository_owner }}/ktools
             ghcr.io/${{ github.repository_owner }}/ktools
           flavor: |
             latest=${{ matrix.image.latest || 'false' }}
@@ -111,7 +111,7 @@ jobs:
           platforms: linux/amd64
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
+          cache-from: type=registry,ref=${{ github.repository_owner }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
           cache-to: type=inline
           build-args: |
             DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
