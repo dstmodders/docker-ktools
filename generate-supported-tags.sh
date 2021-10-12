@@ -37,9 +37,9 @@ function print_url() {
   local dist="$3"
   local official="$4"
 
-  local url="[$tags](https://github.com/victorpopkov/docker-ktools/blob/${commit}/latest/${dist}/Dockerfile)"
+  local url="[$tags](https://github.com/dstmodders/docker-ktools/blob/${commit}/latest/${dist}/Dockerfile)"
   if [ "${official}" == 'true' ]; then
-    url="[$tags](https://github.com/victorpopkov/docker-ktools/blob/${commit}/official/${dist}/Dockerfile)"
+    url="[$tags](https://github.com/dstmodders/docker-ktools/blob/${commit}/official/${dist}/Dockerfile)"
   fi
 
   echo "- ${url}"
