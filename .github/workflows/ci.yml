@@ -37,6 +37,8 @@ jobs:
           echo "GITHUB_JOB_NAME=build" >> $GITHUB_ENV
           echo "IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick }}" >> $GITHUB_ENV
           echo "ROOT=${{ matrix.image.root }}" >> $GITHUB_ENV
+          echo "SLACK_COLOR_FAILURE=#cc1f2d" >> $GITHUB_ENV
+          echo "SLACK_COLOR_SUCCESS=#24a943" >> $GITHUB_ENV
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -122,12 +124,12 @@ jobs:
         if: success()
         run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
         env:
-          SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"#2eb886","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} workflow {{ GITHUB_JOB_NAME }} job v{{ DS_KTOOLS_VERSION }} of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has passed","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions *<https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }}>* workflow *{{ GITHUB_JOB_NAME }}* job *v{{ DS_KTOOLS_VERSION }}* of *<https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}>* by *{{ GITHUB_ACTOR }}* has passed"}}]}]}'
+          SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"{{ SLACK_COLOR_SUCCESS }}","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }} / v{{ DS_KTOOLS_VERSION }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has passed","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions <https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }} / v{{ DS_KTOOLS_VERSION }}> job of <https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}> by <https://github.com/{{ GITHUB_ACTOR }}|{{ GITHUB_ACTOR }}> has passed"}}]}]}'
       - name: Prepare failure Slack notification
         if: failure()
         run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
         env:
-          SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"#ed2f00","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} workflow {{ GITHUB_JOB_NAME }} job v{{ DS_KTOOLS_VERSION }} of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has failed","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions *<https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }}>* workflow *{{ GITHUB_JOB_NAME }}* job *v{{ DS_KTOOLS_VERSION }}* of *<https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}>* by *{{ GITHUB_ACTOR }}* has failed"}}]}]}'
+          SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"{{ SLACK_COLOR_FAILURE }}","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }} / v{{ DS_KTOOLS_VERSION }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has failed","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions <https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }} / v{{ DS_KTOOLS_VERSION }}> job of <https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}> by <https://github.com/{{ GITHUB_ACTOR }}|{{ GITHUB_ACTOR }}> has failed"}}]}]}'
       - name: Send Slack notification
         if: ${{ !env.ACT && always() }}
         uses: Ilshidur/action-slack@2.1.0
@@ -143,48 +145,43 @@ jobs:
         run: |
           echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
           echo "GITHUB_JOB_NAME=lint" >> $GITHUB_ENV
+          echo "SLACK_COLOR_FAILURE=#cc1f2d" >> $GITHUB_ENV
+          echo "SLACK_COLOR_SUCCESS=#24a943" >> $GITHUB_ENV
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 12.x
+          node-version: '16'
       - name: Install Prettier
         run: yarn global add prettier
       - name: Lint
-        continue-on-error: true
         id: lint
         run: |
-          # Prettier
-          export LINT_ISSUES_PRETTIER=$(prettier --list-different . | wc -l)
-          export LINT_ISSUES_PRETTIER=$((LINT_ISSUES_PRETTIER < 0 ? 0 : LINT_ISSUES_PRETTIER))
-
-          # Issues
-          export LINT_ISSUES="${LINT_ISSUES_PRETTIER}"
+          export_env() {
+            export "$1=${2}"
+            echo "$1=${2}"
+            echo "$1=${2}" >> $GITHUB_ENV
+          }
 
           # env
-          echo "LINT_ISSUES=${LINT_ISSUES}" >> $GITHUB_ENV
-          echo "LINT_ISSUES_PRETTIER=${LINT_ISSUES_PRETTIER}" >> $GITHUB_ENV
+          export_env 'LINT_ISSUES_PRETTIER' "$(prettier --list-different . | wc -l)"
+          export_env 'LINT_ISSUES_TOTAL' "${LINT_ISSUES_PRETTIER}"
 
           # lint
+          echo '---'
           prettier --check . || true
 
           # status
-          if [ "${LINT_ISSUES}" -eq 0 ]; then
-            echo '::set-output name=status::success'
-            exit 0
-          else
-            echo '::set-output name=status::failure'
-            exit 1
-          fi
+          if [ "${LINT_ISSUES_TOTAL}" -eq 0 ]; then exit 0; else exit 1; fi
       - name: Prepare success Slack notification
         if: success()
         run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
         env:
-          SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"#2eb886","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} workflow {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has passed with no issues","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions *<https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }}>* workflow *{{ GITHUB_JOB_NAME }}* job of *<https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}>* by *{{ GITHUB_ACTOR }}* has passed with no issues"}}]}]}'
+          SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"{{ SLACK_COLOR_SUCCESS }}","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has passed with no issues","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions <https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }}> job of <https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}> by <https://github.com/{{ GITHUB_ACTOR }}|{{ GITHUB_ACTOR }}> has passed with no issues"}}]}]}'
       - name: Prepare failure Slack notification
         if: failure()
         run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
         env:
-          SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"#ed2f00","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} workflow {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has failed with {{ LINT_ISSUES }} issues","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions *<https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }}>* workflow *{{ GITHUB_JOB_NAME }}* job of *<https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}>* by *{{ GITHUB_ACTOR }}* has failed with *{{ LINT_ISSUES }}* issues"}},{"type":"section","fields":[{"type":"mrkdwn","text":"*Prettier*:\n{{ LINT_ISSUES_PRETTIER }}"}]}]}]}'
+          SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"{{ SLACK_COLOR_FAILURE }}","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has failed with {{ LINT_ISSUES_TOTAL }} issue(s)","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions <https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }}> job of <https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}> by <https://github.com/{{ GITHUB_ACTOR }}|{{ GITHUB_ACTOR }}> has failed with *{{ LINT_ISSUES_TOTAL }}* issue(s)"}},{"type":"section","fields":[{"type":"mrkdwn","text":"*Prettier issues*\n{{ LINT_ISSUES_PRETTIER }}"}]}]}]}'
       - name: Send Slack notification
         if: ${{ !env.ACT && always() }}
         uses: Ilshidur/action-slack@2.1.0
