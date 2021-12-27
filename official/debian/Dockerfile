@@ -2,7 +2,7 @@ FROM debian:bullseye-slim
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ARG IMAGEMAGICK_VERSION="6.9.12-28"
+ARG IMAGEMAGICK_VERSION="6.9.12-34"
 ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
 
 WORKDIR /tmp/
@@ -17,7 +17,7 @@ RUN groupadd --gid 1000 ktools \
     libpng-dev='1.6.37-3' \
     libzip-dev='1.7.3-1' \
     pkg-config='0.29.2-1' \
-    wget='1.21-1+b1' \
+    wget='1.21-1+deb11u1' \
   # ImageMagick
   && wget "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
   && tar -xf "./ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
@@ -57,10 +57,10 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     build-essential='12.9' \
     ca-certificates='20210119' \
-    cmake='3.18.4-2' \
+    cmake='3.18.4-2+deb11u1' \
     patch='2.7.6-7' \
     pkg-config='0.29.2-1' \
-    wget='1.21-1+b1' \
+    wget='1.21-1+deb11u1' \
   # ktools
   && wget "https://github.com/nsimplex/ktools/archive/refs/tags/${DS_KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./${DS_KTOOLS_VERSION}.tar.gz" \
