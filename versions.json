@@ -1,31 +1,31 @@
 [
   {
     "version": "4.3.0",
-    "imagemagick": "6.9.12-19",
+    "imagemagick": "6.9.12-34",
     "official": true,
     "root": "./official"
   },
   {
     "version": "4.3.1",
-    "imagemagick": "6.9.12-19",
+    "imagemagick": "6.9.12-34",
     "official": true,
     "root": "./official"
   },
   {
     "version": "4.4.0",
-    "imagemagick": "6.9.12-19",
+    "imagemagick": "6.9.12-34",
     "latest": true,
     "official": true,
     "root": "./official"
   },
   {
     "version": "4.4.1",
-    "imagemagick": "6.9.12-19",
+    "imagemagick": "6.9.12-34",
     "root": "./latest"
   },
   {
     "version": "4.5.0",
-    "imagemagick": "7.1.0-7",
+    "imagemagick": "7.1.0-19",
     "root": "./latest",
     "previous": {
       "ef2d40c3fc2e675ca492371e0e539f13449a1846": {
@@ -35,7 +35,7 @@
   },
   {
     "version": "4.5.1",
-    "imagemagick": "7.1.0-7",
+    "imagemagick": "7.1.0-19",
     "latest": true,
     "root": "./latest"
   }
