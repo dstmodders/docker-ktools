@@ -25,7 +25,7 @@ jobs:
           JSON=$(cat ./versions.json)
           echo "::set-output name=matrix::$(jq -cM . <<< ${JSON})"
 
-  build:
+  image:
     needs: prepare
     runs-on: ubuntu-latest
     strategy:
