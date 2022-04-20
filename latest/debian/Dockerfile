@@ -19,7 +19,7 @@ RUN groupadd --gid 1000 ktools \
     pkg-config='0.29.2-1' \
     wget='1.21-1+deb11u1' \
   # ImageMagick
-  && wget "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
+  && wget -q "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
   && tar -xf "./ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
   && cd "./ImageMagick-${IMAGEMAGICK_VERSION}/" \
   && ./configure --with-png \
@@ -61,7 +61,7 @@ RUN apt-get update \
     pkg-config='0.29.2-1' \
     wget='1.21-1+deb11u1' \
   # ktools
-  && wget "https://github.com/victorpopkov/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
+  && wget -q "https://github.com/victorpopkov/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./v${DS_KTOOLS_VERSION}.tar.gz" \
   && cd "/tmp/ktools-${DS_KTOOLS_VERSION}/" \
   && cmake \

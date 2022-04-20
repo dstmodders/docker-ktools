@@ -21,7 +21,7 @@ RUN addgroup -g 1000 ktools \
     libc-dev='0.7.2-r3' \
     make='4.3-r0' \
   # ImageMagick
-  && wget "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
+  && wget -q "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
   && tar -xf "./ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
   && cd "./ImageMagick-${IMAGEMAGICK_VERSION}/" \
   && ./configure --with-png \
@@ -49,7 +49,7 @@ RUN apk add --no-cache --virtual .ktools-deps \
     make='4.3-r0' \
     readline-dev='8.1.1-r0' \
   # ktools
-  && wget "https://github.com/victorpopkov/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
+  && wget -q "https://github.com/victorpopkov/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./v${DS_KTOOLS_VERSION}.tar.gz" \
   && cd "/tmp/ktools-${DS_KTOOLS_VERSION}/" \
   && cmake \
