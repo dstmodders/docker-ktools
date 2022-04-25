@@ -39,7 +39,7 @@ jobs:
         run: |
           echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
           echo "DS_KTOOLS_VERSION=${{ matrix.image.version }}" >> $GITHUB_ENV
-          echo "GITHUB_JOB_NAME=build" >> $GITHUB_ENV
+          echo "GITHUB_JOB_NAME=image" >> $GITHUB_ENV
           echo "IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick }}" >> $GITHUB_ENV
           echo "ROOT=${{ matrix.image.root }}" >> $GITHUB_ENV
           echo "SLACK_COLOR_FAILURE=#cc1f2d" >> $GITHUB_ENV
