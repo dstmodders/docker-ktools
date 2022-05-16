@@ -5,8 +5,6 @@ COMMIT_ID=$(git rev-parse --verify HEAD)
 DISTS=('alpine' 'debian')
 VERSIONS=()
 
-cd "${BASE_DIR}" || exit 1
-
 mapfile -t VERSIONS < <(jq -r 'keys[]' ./versions.json)
 IFS=$'\n' VERSIONS=($(sort -rV <<< "${VERSIONS[*]}")); unset IFS
 
@@ -44,6 +42,8 @@ function print_url() {
 
   echo "- ${url}"
 }
+
+cd "${BASE_DIR}" || exit 1
 
 printf "## Supported tags and respective \`Dockerfile\` links\n\n"
 
