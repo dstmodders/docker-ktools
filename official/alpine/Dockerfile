@@ -1,4 +1,4 @@
-FROM alpine:3.15.4
+FROM alpine:3.16.0
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
@@ -10,14 +10,14 @@ WORKDIR /tmp/
 RUN addgroup -g 1000 ktools \
   && adduser -u 1000 -G ktools -s /bin/sh -D ktools \
   && apk add --no-cache \
-    libgcc='10.3.1_git20211027-r0' \
-    libgomp='10.3.1_git20211027-r0' \
+    libgcc='11.2.1_git20220219-r2' \
+    libgomp='11.2.1_git20220219-r2' \
     libpng-dev='1.6.37-r1' \
-    libstdc++='10.3.1_git20211027-r0' \
+    libstdc++='11.2.1_git20220219-r2' \
     libzip-dev='1.8.0-r1' \
   && apk add --no-cache --virtual .imagemagick-deps \
-    cmake='3.21.3-r0' \
-    g++='10.3.1_git20211027-r0' \
+    cmake='3.23.1-r0' \
+    g++='11.2.1_git20220219-r2' \
     libc-dev='0.7.2-r3' \
     make='4.3-r0' \
   # ImageMagick
@@ -43,12 +43,12 @@ ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
 WORKDIR /tmp/
 # hadolint ignore=DL3003
 RUN apk add --no-cache --virtual .ktools-deps \
-    cmake='3.21.3-r0' \
-    g++='10.3.1_git20211027-r0' \
+    cmake='3.23.1-r0' \
+    g++='11.2.1_git20220219-r2' \
     libc-dev='0.7.2-r3' \
     make='4.3-r0' \
     patch='2.7.6-r7' \
-    readline-dev='8.1.1-r0' \
+    readline-dev='8.1.2-r0' \
   # ktools
   && wget -q "https://github.com/nsimplex/ktools/archive/refs/tags/${DS_KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./${DS_KTOOLS_VERSION}.tar.gz" \
