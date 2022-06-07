@@ -2,7 +2,7 @@ FROM debian:bullseye-slim
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ARG IMAGEMAGICK_VERSION="7.1.0-34"
+ARG IMAGEMAGICK_VERSION="7.1.0-37"
 ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
 
 WORKDIR /tmp/
