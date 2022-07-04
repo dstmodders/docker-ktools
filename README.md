@@ -43,14 +43,14 @@ _This repository uses a fork [dstmodders/ktools][] instead of the original
 | `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | Path to [krane][]       |
 | `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | Path to [ktech][]       |
 | `DS_KTOOLS_VERSION`   | `4.5.1`                | [ktools][] version      |
-| `IMAGEMAGICK_VERSION` | `7.1.0-37`             | [ImageMagick][] version |
+| `IMAGEMAGICK_VERSION` | `7.1.0-40`             | [ImageMagick][] version |
 
 ## Usage
 
 [Fork releases][] (recommended):
 
 ```shell
-$ docker pull dstmodders/ktools # same tag: 4.5.1-imagemagick-7.1.0-37-alpine
+$ docker pull dstmodders/ktools # same tag: 4.5.1-imagemagick-7.1.0-40-alpine
 ```
 
 Or you can also pick one of the [official releases][]:

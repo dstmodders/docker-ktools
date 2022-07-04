@@ -2,7 +2,7 @@ FROM debian:bullseye-slim
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ARG IMAGEMAGICK_VERSION="7.1.0-37"
+ARG IMAGEMAGICK_VERSION="7.1.0-40"
 ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
 
 WORKDIR /tmp/
@@ -19,7 +19,7 @@ RUN groupadd --gid 1000 ktools \
     pkg-config='0.29.2-1' \
     wget='1.21-1+deb11u1' \
   # ImageMagick
-  && wget -q "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
+  && wget -q "https://imagemagick.org/archive/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
   && tar -xf "./ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
   && cd "./ImageMagick-${IMAGEMAGICK_VERSION}/" \
   && ./configure --with-png \
