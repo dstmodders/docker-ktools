@@ -2,7 +2,7 @@ FROM alpine:3.16.0
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
-ARG IMAGEMAGICK_VERSION="6.9.12-52"
+ARG IMAGEMAGICK_VERSION="6.9.12-55"
 ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
 
 WORKDIR /tmp/
@@ -21,7 +21,7 @@ RUN addgroup -g 1000 ktools \
     libc-dev='0.7.2-r3' \
     make='4.3-r0' \
   # ImageMagick
-  && wget -q "https://imagemagick.org/download/releases/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
+  && wget -q "https://imagemagick.org/archive/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
   && tar -xf "./ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
   && cd "./ImageMagick-${IMAGEMAGICK_VERSION}/" \
   && ./configure --with-png \
