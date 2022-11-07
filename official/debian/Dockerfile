@@ -13,15 +13,15 @@ RUN groupadd --gid 1000 ktools \
   && apt-get install -y --no-install-recommends \
     build-essential='12.9' \
     ca-certificates='20210119' \
+    git='1:2.30.2-1' \
     libgomp1='10.2.1-6' \
     libpng-dev='1.6.37-3' \
     libzip-dev='1.7.3-1' \
     pkg-config='0.29.2-1' \
-    wget='1.21-1+deb11u1' \
   # ImageMagick
-  && wget -q "https://imagemagick.org/archive/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
-  && tar -xf "./ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
-  && cd "./ImageMagick-${IMAGEMAGICK_VERSION}/" \
+  && git clone https://github.com/ImageMagick/ImageMagick6.git \
+  && cd "/tmp/ImageMagick6/" \
+  && git checkout "${IMAGEMAGICK_VERSION}" \
   && ./configure --with-png \
   && make \
   && make install \
@@ -30,8 +30,8 @@ RUN groupadd --gid 1000 ktools \
   && apt-get remove -y \
     build-essential \
     ca-certificates \
+    git \
     pkg-config \
-    wget \
   && apt-get clean \
   && apt-get autoremove -y \
   && rm -Rf \
