@@ -18,12 +18,13 @@ RUN addgroup -g 1000 ktools \
   && apk add --no-cache --virtual .imagemagick-deps \
     cmake='3.23.1-r0' \
     g++='11.2.1_git20220219-r2' \
+    git='2.36.3-r0' \
     libc-dev='0.7.2-r3' \
     make='4.3-r0' \
   # ImageMagick
-  && wget -q "https://imagemagick.org/archive/ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
-  && tar -xf "./ImageMagick-${IMAGEMAGICK_VERSION}.tar.xz" \
-  && cd "./ImageMagick-${IMAGEMAGICK_VERSION}/" \
+  && git clone https://github.com/ImageMagick/ImageMagick.git \
+  && cd "/tmp/ImageMagick/" \
+  && git checkout "${IMAGEMAGICK_VERSION}" \
   && ./configure --with-png \
   && make \
   && make install \
