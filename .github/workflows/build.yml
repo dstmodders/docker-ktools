@@ -23,7 +23,7 @@ jobs:
         id: set-matrix
         run: |
           JSON=$(cat ./versions.json)
-          echo "::set-output name=matrix::$(jq -cM . <<< ${JSON})"
+          echo "matrix=$(jq -cM . <<< ${JSON})" >> $GITHUB_OUTPUT
 
   image:
     needs: prepare
