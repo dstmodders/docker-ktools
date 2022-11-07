@@ -61,7 +61,7 @@ RUN apt-get update \
     pkg-config='0.29.2-1' \
     wget='1.21-1+deb11u1' \
   # ktools
-  && wget -q "https://github.com/victorpopkov/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
+  && wget -q "https://github.com/dstmodders/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./v${DS_KTOOLS_VERSION}.tar.gz" \
   && cd "/tmp/ktools-${DS_KTOOLS_VERSION}/" \
   && cmake \

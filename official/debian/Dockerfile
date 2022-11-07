@@ -64,7 +64,7 @@ RUN apt-get update \
   # ktools
   && wget -q "https://github.com/nsimplex/ktools/archive/refs/tags/${DS_KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./${DS_KTOOLS_VERSION}.tar.gz" \
-  && wget -q https://github.com/victorpopkov/ktools/commit/47f38381671e03455eab193a1d3a88e11666af99.patch \
+  && wget -q https://github.com/dstmodders/ktools/commit/47f38381671e03455eab193a1d3a88e11666af99.patch \
   && cd "/tmp/ktools-${DS_KTOOLS_VERSION}/" \
   && patch -p1 < /tmp/47f38381671e03455eab193a1d3a88e11666af99.patch \
   && cmake \

@@ -50,7 +50,7 @@ RUN apk add --no-cache --virtual .ktools-deps \
     make='4.3-r0' \
     readline-dev='8.1.2-r0' \
   # ktools
-  && wget -q "https://github.com/victorpopkov/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
+  && wget -q "https://github.com/dstmodders/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./v${DS_KTOOLS_VERSION}.tar.gz" \
   && cd "/tmp/ktools-${DS_KTOOLS_VERSION}/" \
   && cmake \
