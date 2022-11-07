@@ -19,7 +19,7 @@ RUN groupadd --gid 1000 ktools \
     libzip-dev='1.7.3-1' \
     pkg-config='0.29.2-1' \
   # ImageMagick
-  && git clone "https://github.com/ImageMagick/ImageMagick$([[ "$IMAGEMAGICK_VERSION" =~ ^6 ]] && echo '6').git" /tmp/ImageMagick/ \
+  && git clone "https://github.com/ImageMagick/ImageMagick$([[ "${IMAGEMAGICK_VERSION}" =~ ^6 ]] && echo '6').git" /tmp/ImageMagick/ \
   && cd "/tmp/ImageMagick/" \
   && git checkout "${IMAGEMAGICK_VERSION}" \
   && ./configure --with-png \

@@ -22,7 +22,7 @@ RUN addgroup -g 1000 ktools \
     libc-dev='0.7.2-r3' \
     make='4.3-r0' \
   # ImageMagick
-  && git clone "https://github.com/ImageMagick/ImageMagick$([[ "$IMAGEMAGICK_VERSION" =~ ^6 ]] && echo '6').git" /tmp/ImageMagick/ \
+  && git clone "https://github.com/ImageMagick/ImageMagick$([ "$(printf '%s' "${IMAGEMAGICK_VERSION}" | cut -c 1)" -eq '6' ] && echo '6').git" /tmp/ImageMagick/ \
   && cd "/tmp/ImageMagick/" \
   && git checkout "${IMAGEMAGICK_VERSION}" \
   && ./configure --with-png \
