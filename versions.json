@@ -25,7 +25,7 @@
   },
   {
     "version": "4.5.0",
-    "imagemagick": "7.1.0-51",
+    "imagemagick": "7.1.0-52",
     "root": "./latest",
     "previous": {
       "ef2d40c3fc2e675ca492371e0e539f13449a1846": {
@@ -35,7 +35,7 @@
   },
   {
     "version": "4.5.1",
-    "imagemagick": "7.1.0-51",
+    "imagemagick": "7.1.0-52",
     "latest": true,
     "root": "./latest"
   }
