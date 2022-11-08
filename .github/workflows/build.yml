@@ -82,7 +82,7 @@ jobs:
         with:
           context: .
           file: ${{ env.ROOT }}/debian/Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/386
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
           cache-from: type=registry,ref=${{ github.repository_owner }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
@@ -115,7 +115,7 @@ jobs:
         with:
           context: .
           file: ${{ env.ROOT }}/alpine/Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/386
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
           cache-from: type=registry,ref=${{ github.repository_owner }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
