@@ -1,4 +1,4 @@
-FROM alpine:3.16.2
+FROM alpine:3.17.0
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
@@ -10,17 +10,17 @@ WORKDIR /tmp/
 RUN addgroup -g 1000 ktools \
   && adduser -u 1000 -G ktools -s /bin/sh -D ktools \
   && apk add --no-cache \
-    libgcc='11.2.1_git20220219-r2' \
-    libgomp='11.2.1_git20220219-r2' \
-    libpng-dev='1.6.37-r1' \
-    libstdc++='11.2.1_git20220219-r2' \
-    libzip-dev='1.8.0-r1' \
+    libgcc='12.2.1_git20220924-r4' \
+    libgomp='12.2.1_git20220924-r4' \
+    libpng-dev='1.6.38-r0' \
+    libstdc++='12.2.1_git20220924-r4' \
+    libzip-dev='1.9.2-r2' \
   && apk add --no-cache --virtual .imagemagick-deps \
-    cmake='3.23.1-r0' \
-    g++='11.2.1_git20220219-r2' \
-    git='2.36.3-r0' \
+    cmake='3.24.3-r0' \
+    g++='12.2.1_git20220924-r4' \
+    git='2.38.2-r0' \
     libc-dev='0.7.2-r3' \
-    make='4.3-r0' \
+    make='4.3-r1' \
   # ImageMagick
   && git clone "https://github.com/ImageMagick/ImageMagick$([ "$(printf '%s' "${IMAGEMAGICK_VERSION}" | cut -c 1)" -eq '6' ] && echo '6').git" /tmp/ImageMagick/ \
   && cd "/tmp/ImageMagick/" \
@@ -44,11 +44,11 @@ ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
 WORKDIR /tmp/
 # hadolint ignore=DL3003
 RUN apk add --no-cache --virtual .ktools-deps \
-    cmake='3.23.1-r0' \
-    g++='11.2.1_git20220219-r2' \
+    cmake='3.24.3-r0' \
+    g++='12.2.1_git20220924-r4' \
     libc-dev='0.7.2-r3' \
-    make='4.3-r0' \
-    readline-dev='8.1.2-r0' \
+    make='4.3-r1' \
+    readline-dev='8.2.0-r0' \
   # ktools
   && wget -q "https://github.com/dstmodders/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./v${DS_KTOOLS_VERSION}.tar.gz" \
