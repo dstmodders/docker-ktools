@@ -11,6 +11,11 @@ on:
       - versions.json
   workflow_dispatch:
 
+env:
+  SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+  SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
+  SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -35,15 +40,17 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v3
-      - name: Set a job-wide environment variables
-        run: |
-          echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "DS_KTOOLS_VERSION=${{ matrix.image.version }}" >> $GITHUB_ENV
-          echo "GITHUB_JOB_NAME=image" >> $GITHUB_ENV
-          echo "IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick }}" >> $GITHUB_ENV
-          echo "ROOT=${{ matrix.image.root }}" >> $GITHUB_ENV
-          echo "SLACK_COLOR_FAILURE=#cc1f2d" >> $GITHUB_ENV
-          echo "SLACK_COLOR_SUCCESS=#24a943" >> $GITHUB_ENV
+      - name: Send Slack notification
+        uses: codedsolar/slack-action@v1
+        if: ${{ github.event_name != 'pull_request' }}
+        id: slack
+        with:
+          fields: |
+            {STATUS}
+            {REF}
+            ImageMagick version: ${{ matrix.image.imagemagick }}
+            ktools version: ${{ matrix.image.version }}
+          status: in-progress
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -55,46 +62,47 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
       - name: Login to GHCR
-        if: ${{ github.event_name != 'pull_request' }}
         uses: docker/login-action@v2
+        if: ${{ github.event_name != 'pull_request' }}
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
       - name: Prepare Docker meta for a Debian image
-        id: debian-meta
         uses: docker/metadata-action@v4
+        id: debian-meta
         with:
+          flavor: |
+            prefix=${{ matrix.image.official && 'official-' || '' }},onlatest=${{ matrix.image.official || 'false' }}
           images: |
             ${{ github.repository_owner }}/ktools
             ghcr.io/${{ github.repository_owner }}/ktools
-          flavor: |
-            prefix=${{ matrix.image.official && 'official-' || '' }},onlatest=${{ matrix.image.official || 'false' }}
           labels: |
             maintainer=victor@popkov.me
           tags: |
-            type=raw,value=${{ env.DS_KTOOLS_VERSION }}
-            type=raw,value=${{ env.DS_KTOOLS_VERSION }}-debian
-            type=raw,value=${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
+            type=raw,value=${{ matrix.image.version }}
+            type=raw,value=${{ matrix.image.version }}-debian
+            type=raw,value=${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick }}-debian
             ${{ matrix.image.latest && 'type=raw,value=debian' || '' }}
       - name: Build a Debian image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
+        id: debian
         with:
+          build-args: |
+            DS_KTOOLS_VERSION=${{ matrix.image.version }}
+            IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick }}
+          cache-from: type=registry,ref=${{ github.repository_owner }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick }}-debian
+          cache-to: type=inline
           context: .
-          file: ${{ env.ROOT }}/debian/Dockerfile
+          file: ${{ matrix.image.root }}/debian/Dockerfile
+          labels: ${{ steps.debian-meta.outputs.labels }}
           platforms: linux/amd64,linux/386
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
-          cache-from: type=registry,ref=${{ github.repository_owner }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-debian
-          cache-to: type=inline
-          build-args: |
-            DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
-            IMAGEMAGICK_VERSION=${{ env.IMAGEMAGICK_VERSION }}
           tags: ${{ steps.debian-meta.outputs.tags }}
-          labels: ${{ steps.debian-meta.outputs.labels }}
       - name: Prepare Docker meta for an Alpine image
-        id: alpine-meta
         uses: docker/metadata-action@v4
+        id: alpine-meta
         with:
           images: |
             ${{ github.repository_owner }}/ktools
@@ -105,38 +113,35 @@ jobs:
           labels: |
             maintainer=victor@popkov.me
           tags: |
-            type=raw,value=${{ env.DS_KTOOLS_VERSION }}
-            type=raw,value=${{ env.DS_KTOOLS_VERSION }}-alpine
-            type=raw,value=${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
+            type=raw,value=${{ matrix.image.version }}
+            type=raw,value=${{ matrix.image.version }}-alpine
+            type=raw,value=${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick }}-alpine
             ${{ matrix.image.latest && 'type=raw,value=alpine' || '' }}
             ${{ (matrix.image.latest && matrix.image.official) && 'type=raw,prefix=,suffix=,value=official' || '' }}
       - name: Build an Alpine image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
+        id: alpine
         with:
+          build-args: |
+            DS_KTOOLS_VERSION=${{ matrix.image.version }}
+            IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick }}
+          cache-from: type=registry,ref=${{ github.repository_owner }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick }}-alpine
+          cache-to: type=inline
           context: .
-          file: ${{ env.ROOT }}/alpine/Dockerfile
+          file: ${{ matrix.image.root }}/alpine/Dockerfile
+          labels: ${{ steps.alpine-meta.outputs.labels }}
           platforms: linux/amd64,linux/386
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
-          cache-from: type=registry,ref=${{ github.repository_owner }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ env.DS_KTOOLS_VERSION }}-imagemagick-${{ env.IMAGEMAGICK_VERSION }}-alpine
-          cache-to: type=inline
-          build-args: |
-            DS_KTOOLS_VERSION=${{ env.DS_KTOOLS_VERSION }}
-            IMAGEMAGICK_VERSION=${{ env.IMAGEMAGICK_VERSION }}
           tags: ${{ steps.alpine-meta.outputs.tags }}
-          labels: ${{ steps.alpine-meta.outputs.labels }}
-      - name: Prepare success Slack notification
-        if: ${{ success() }}
-        run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
-        env:
-          SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"{{ SLACK_COLOR_SUCCESS }}","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }} / v{{ DS_KTOOLS_VERSION }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has passed","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions <https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }} / v{{ DS_KTOOLS_VERSION }}> job of <https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}> by <https://github.com/{{ GITHUB_ACTOR }}|{{ GITHUB_ACTOR }}> has passed"}}]}]}'
-      - name: Prepare failure Slack notification
-        if: ${{ failure() }}
-        run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
-        env:
-          SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"{{ SLACK_COLOR_FAILURE }}","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }} / v{{ DS_KTOOLS_VERSION }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has failed","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions <https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }} / v{{ DS_KTOOLS_VERSION }}> job of <https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}> by <https://github.com/{{ GITHUB_ACTOR }}|{{ GITHUB_ACTOR }}> has failed"}}]}]}'
-      - name: Send Slack notification
-        if: ${{ !env.ACT && always() }}
-        uses: Ilshidur/action-slack@2.1.0
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      - name: Update Slack notification
+        uses: codedsolar/slack-action@v1
+        if: ${{ github.event_name != 'pull_request' && always() }}
+        with:
+          fields: |
+            {STATUS}
+            {REF}
+            ImageMagick version: ${{ matrix.image.imagemagick }}
+            ktools version: ${{ matrix.image.version }}
+          status: ${{ job.status }}
+          timestamp: ${{ steps.slack.outputs.slack-timestamp }}
