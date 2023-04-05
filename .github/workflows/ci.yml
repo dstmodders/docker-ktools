@@ -7,55 +7,63 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+  SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
+  SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
         uses: actions/checkout@v3
-      - name: Set a job-wide environment variables
-        run: |
-          echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "GITHUB_JOB_NAME=lint" >> $GITHUB_ENV
-          echo "SLACK_COLOR_FAILURE=#cc1f2d" >> $GITHUB_ENV
-          echo "SLACK_COLOR_SUCCESS=#24a943" >> $GITHUB_ENV
       - name: Set up Node.js
         uses: actions/setup-node@v3
+        id: node
         with:
-          node-version: '16'
+          node-version: 16
+      - name: Send Slack notification
+        uses: codedsolar/slack-action@v1
+        if: ${{ github.event_name != 'pull_request' }}
+        id: slack
+        with:
+          fields: |
+            {STATUS}
+            {REF}
+            Node.js: ${{ steps.node.outputs.node-version }}
+            Prettier issues: Checking...
+          status: in-progress
       - name: Install Prettier
         run: yarn global add prettier
       - name: Lint
         id: lint
         run: |
-          export_env() {
-            export "$1=${2}"
-            echo "$1=${2}"
-            echo "$1=${2}" >> $GITHUB_ENV
+          export_output() {
+            env=${1^^}
+            env=${env//-/_}
+            export "$env=$2"
+            echo "export $env=$2"
+            echo "$1=$2" >> $GITHUB_OUTPUT
           }
 
-          # env
-          export_env 'LINT_ISSUES_PRETTIER' "$(prettier --list-different . | wc -l)"
-          export_env 'LINT_ISSUES_TOTAL' "${LINT_ISSUES_PRETTIER}"
+          # output
+          export_output 'prettier-issues' "$(prettier --list-different . | wc -l)"
 
           # lint
           echo '---'
           prettier --check . || true
 
           # status
-          if [ "${LINT_ISSUES_TOTAL}" -eq 0 ]; then exit 0; else exit 1; fi
-      - name: Prepare success Slack notification
-        if: ${{ success() }}
-        run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
-        env:
-          SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"{{ SLACK_COLOR_SUCCESS }}","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has passed with no issues","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions <https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }}> job of <https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}> by <https://github.com/{{ GITHUB_ACTOR }}|{{ GITHUB_ACTOR }}> has passed with no issues"}}]}]}'
-      - name: Prepare failure Slack notification
-        if: ${{ failure() }}
-        run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
-        env:
-          SLACK_CUSTOM_PAYLOAD: '{"channel":"${{ secrets.SLACK_CHANNEL }}","attachments":[{"color":"{{ SLACK_COLOR_FAILURE }}","fallback":"GitHub Actions {{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }} job of {{ GITHUB_REPOSITORY }}@{{ BRANCH_NAME }} by {{ GITHUB_ACTOR }} has failed with {{ LINT_ISSUES_TOTAL }} issue(s)","blocks":[{"type":"section","text":{"type":"mrkdwn","text":"GitHub Actions <https://github.com/{{ GITHUB_REPOSITORY }}/actions/runs/{{ GITHUB_RUN_ID }}|{{ GITHUB_WORKFLOW }} / {{ GITHUB_JOB_NAME }}> job of <https://github.com/{{ GITHUB_REPOSITORY }}|{{ GITHUB_REPOSITORY }}>@<https://github.com/{{ GITHUB_REPOSITORY }}/tree/{{ BRANCH_NAME }}|{{ BRANCH_NAME }}> by <https://github.com/{{ GITHUB_ACTOR }}|{{ GITHUB_ACTOR }}> has failed with *{{ LINT_ISSUES_TOTAL }}* issue(s)"}},{"type":"section","fields":[{"type":"mrkdwn","text":"*Prettier issues*\n{{ LINT_ISSUES_PRETTIER }}"}]}]}]}'
-      - name: Send Slack notification
-        if: ${{ !env.ACT && always() }}
-        uses: Ilshidur/action-slack@2.1.0
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          if [ "$PRETTIER_ISSUES" -eq 0 ]; then exit 0; else exit 1; fi
+      - name: Update Slack notification
+        uses: codedsolar/slack-action@v1
+        if: ${{ github.event_name != 'pull_request' && always() }}
+        with:
+          fields: |
+            {STATUS}
+            {REF}
+            Node.js: ${{ steps.node.outputs.node-version }}
+            Prettier issues: ${{ steps.lint.outputs.prettier-issues || 'Skipped' }}
+          status: ${{ job.status }}
+          timestamp: ${{ steps.slack.outputs.slack-timestamp }}
