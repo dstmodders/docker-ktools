@@ -56,7 +56,7 @@ $ docker pull dstmodders/ktools # same tag: 4.5.1-imagemagick-7.1.0-55-alpine
 Or you can also pick one of the [official releases]:
 
 ```shell
-$ docker pull dstmodders/ktools:official # same tag: official-4.4.0-imagemagick-6.9.12-70-alpine
+$ docker pull dstmodders/ktools:official # same tag: official-4.4.0-imagemagick-6.9.12-84-alpine
 ```
 
 See [tags] for a list of all available versions.
