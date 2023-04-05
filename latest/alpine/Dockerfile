@@ -1,4 +1,4 @@
-FROM alpine:3.17.0
+FROM alpine:3.17.3
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
@@ -16,9 +16,9 @@ RUN addgroup -g 1000 ktools \
     libstdc++='12.2.1_git20220924-r4' \
     libzip-dev='1.9.2-r2' \
   && apk add --no-cache --virtual .imagemagick-deps \
-    cmake='3.24.3-r0' \
+    cmake='3.24.4-r0' \
     g++='12.2.1_git20220924-r4' \
-    git='2.38.2-r0' \
+    git='2.38.4-r1' \
     libc-dev='0.7.2-r3' \
     make='4.3-r1' \
   # ImageMagick
@@ -44,7 +44,7 @@ ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
 WORKDIR /tmp/
 # hadolint ignore=DL3003
 RUN apk add --no-cache --virtual .ktools-deps \
-    cmake='3.24.3-r0' \
+    cmake='3.24.4-r0' \
     g++='12.2.1_git20220924-r4' \
     libc-dev='0.7.2-r3' \
     make='4.3-r1' \
