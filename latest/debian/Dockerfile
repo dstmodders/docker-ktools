@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -12,12 +12,12 @@ RUN groupadd --gid 1000 ktools \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
     build-essential='12.9' \
-    ca-certificates='20210119' \
-    git='1:2.30.2-1' \
-    libgomp1='10.2.1-6' \
-    libpng-dev='1.6.37-3' \
-    libzip-dev='1.7.3-1' \
-    pkg-config='0.29.2-1' \
+    ca-certificates='20230311' \
+    git='1:2.39.2-1.1' \
+    libgomp1='12.2.0-14' \
+    libpng-dev='1.6.39-2' \
+    libzip-dev='1.7.3-1+b1' \
+    pkg-config='1.8.1-1' \
   # ImageMagick
   && git clone "https://github.com/ImageMagick/ImageMagick$([[ "${IMAGEMAGICK_VERSION}" =~ ^6 ]] && echo '6').git" /tmp/ImageMagick/ \
   && cd "/tmp/ImageMagick/" \
@@ -56,10 +56,10 @@ WORKDIR /tmp/
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     build-essential='12.9' \
-    ca-certificates='20210119' \
-    cmake='3.18.4-2+deb11u1' \
-    pkg-config='0.29.2-1' \
-    wget='1.21-1+deb11u1' \
+    ca-certificates='20230311' \
+    cmake='3.25.1-1' \
+    pkg-config='1.8.1-1' \
+    wget='1.21.3-1+b2' \
   # ktools
   && wget -q "https://github.com/dstmodders/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./v${DS_KTOOLS_VERSION}.tar.gz" \
