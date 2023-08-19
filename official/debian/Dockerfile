@@ -47,9 +47,11 @@ RUN groupadd --gid 1000 ktools \
   && identify -version
 
 ARG DS_KTOOLS_VERSION="4.4.0"
+ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
+
+ARG TARGETPLATFORM
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
-ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
 
 WORKDIR /tmp/
 # hadolint ignore=DL3003
@@ -60,7 +62,7 @@ RUN apt-get update \
     cmake='3.25.1-1' \
     patch='2.7.6-7' \
     pkg-config='1.8.1-1' \
-    wget='1.21.3-1+b2' \
+    wget="$([[ "${TARGETPLATFORM}" == 'linux/386' ]] && echo '1.21.3-1+b1' || echo '1.21.3-1+b2')" \
   # ktools
   && wget -q "https://github.com/nsimplex/ktools/archive/refs/tags/${DS_KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./${DS_KTOOLS_VERSION}.tar.gz" \

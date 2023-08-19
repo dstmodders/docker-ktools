@@ -36,9 +36,10 @@ RUN addgroup -g 1000 ktools \
   && identify -version
 
 ARG DS_KTOOLS_VERSION="4.5.1"
+ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
+
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
-ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
 
 # Install ktools
 WORKDIR /tmp/
