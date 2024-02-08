@@ -33,8 +33,9 @@ releases]. See [fork releases] to learn more._
 
 - [Environment variables](#environment-variables)
 - [Usage](#usage)
-  - [Linux & macOS](#linux--macos)
-  - [Windows](#windows)
+  - [Interactive](#interactive)
+  - [Non-interactive](#non-interactive)
+- [Build](#build)
 
 ## Environment variables
 
@@ -75,6 +76,29 @@ The same, but shorter:
 $ docker run --rm -u ktools -itv '/path/to/your/data/:/data/' dstmodders/ktools
 ```
 
+The typical use case for an interactive mode is to mount the current working
+directory:
+
+#### On Linux & macOS (Shell/Bash)
+
+```shell
+$ docker run --rm -u ktools -itv "$(pwd):/data/" dstmodders/ktools
+```
+
+#### On Windows
+
+##### CMD
+
+```cmd
+> docker run --rm -u ktools -itv "%CD%:/data/" dstmodders/ktools
+```
+
+##### PowerShell
+
+```powershell
+PS:\> docker run --rm -u ktools -itv "${PWD}:/data/" dstmodders/ktools
+```
+
 ### Non-interactive
 
 ```shell
@@ -90,26 +114,35 @@ The same, but shorter:
 $ docker run --rm -u ktools -v '/path/to/your/data/:/data/' dstmodders/ktools ktech --version
 ```
 
-### Linux & macOS
+## Build
 
-#### Shell/Bash
+To build images locally:
 
 ```shell
-$ docker run --rm -u ktools -itv "$(pwd):/data/" dstmodders/ktools
+$ docker build ./latest/alpine/ --tag='dstmodders/ktools:alpine'
+$ docker build ./latest/debian/ --tag='dstmodders/ktools:debian'
+$ docker build ./official/alpine/ --tag='dstmodders/ktools:official-alpine'
+$ docker build ./official/debian/ --tag='dstmodders/ktools:official-debian'
 ```
 
-### Windows
+To build images locally using [buildx] to target multiple platforms, ensure that
+your builder is running. If you are using [QEMU] emulation, you may also need to
+enable [qemu-user-static].
 
-#### CMD
+In overall, to create your builder and enable [QEMU] emulation:
 
-```cmd
-> docker run --rm -u ktools -itv "%CD%:/data/" dstmodders/ktools
+```shell
+$ docker buildx create --name mybuilder --use --bootstrap
+$ docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 ```
 
-#### PowerShell
+Respectively, to build multi-platform images locally:
 
-```powershell
-PS:\> docker run --rm -u ktools -itv "${PWD}:/data/" dstmodders/ktools
+```shell
+$ docker buildx build ./latest/alpine/ --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:alpine'
+$ docker buildx build ./latest/debian/ --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:debian'
+$ docker buildx build ./official/alpine/ --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:official-alpine'
+$ docker buildx build ./official/debian/ --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:official-debian'
 ```
 
 ## License
@@ -119,6 +152,7 @@ Released under the [MIT License](https://opensource.org/licenses/MIT).
 [@nsimplex]: https://github.com/nsimplex
 [alpine size]: https://img.shields.io/docker/image-size/dstmodders/ktools/alpine?label=alpine%20size&logo=docker
 [build]: https://img.shields.io/github/actions/workflow/status/dstmodders/docker-ktools/build.yml?branch=main&label=build&logo=github
+[buildx]: https://github.com/docker/buildx
 [ci]: https://img.shields.io/github/actions/workflow/status/dstmodders/docker-ktools/ci.yml?branch=main&label=ci&logo=github
 [debian size]: https://img.shields.io/docker/image-size/dstmodders/ktools/debian?label=debian%20size&logo=docker
 [docker]: https://www.docker.com/
@@ -134,6 +168,8 @@ Released under the [MIT License](https://opensource.org/licenses/MIT).
 [nsimplex/ktools]: https://github.com/nsimplex/ktools
 [official releases]: https://github.com/nsimplex/ktools/releases
 [official]: https://github.com/nsimplex/ktools/releases
+[qemu-user-static]: https://github.com/multiarch/qemu-user-static
+[qemu]: https://www.qemu.org/
 [tags]: https://hub.docker.com/r/dstmodders/ktools/tags
 [v4.4.0]: https://github.com/dstmodders/ktools/releases/tag/4.4.0
 [v4.4.1]: https://github.com/dstmodders/ktools/releases/tag/v4.4.1
