@@ -2,7 +2,7 @@ FROM debian:bookworm-slim
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ARG IMAGEMAGICK_VERSION="7.1.1-15"
+ARG IMAGEMAGICK_VERSION="7.1.1-27"
 ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
 
 WORKDIR /tmp/
