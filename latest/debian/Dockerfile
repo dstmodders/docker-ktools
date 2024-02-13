@@ -1,50 +1,9 @@
-FROM debian:bookworm-slim
+ARG IMAGEMAGICK_IMAGE_PREFIX=""
+ARG IMAGEMAGICK_VERSION="7.1.1-28"
+
+FROM dstmodders/imagemagick:${IMAGEMAGICK_IMAGE_PREFIX}${IMAGEMAGICK_VERSION}-debian
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-ARG IMAGEMAGICK_VERSION="7.1.1-28"
-ENV IMAGEMAGICK_VERSION="${IMAGEMAGICK_VERSION}"
-
-WORKDIR /tmp/
-# hadolint ignore=DL3003
-RUN groupadd --gid 1000 ktools \
-  && useradd --uid 1000 --gid ktools --shell /bin/bash --create-home ktools \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends \
-    build-essential='12.9' \
-    ca-certificates='20230311' \
-    git='1:2.39.2-1.1' \
-    libgomp1='12.2.0-14' \
-    libpng-dev='1.6.39-2' \
-    libzip-dev='1.7.3-1+b1' \
-    pkg-config='1.8.1-1' \
-  # ImageMagick
-  && git clone "https://github.com/ImageMagick/ImageMagick$([[ "${IMAGEMAGICK_VERSION}" =~ ^6 ]] && echo '6').git" /tmp/ImageMagick/ \
-  && cd "/tmp/ImageMagick/" \
-  && git checkout "${IMAGEMAGICK_VERSION}" \
-  && ./configure --with-png \
-  && make \
-  && make install \
-  && ldconfig /usr/local/lib/ \
-  # clean
-  && apt-get remove -y \
-    build-essential \
-    ca-certificates \
-    git \
-    pkg-config \
-  && apt-get clean \
-  && apt-get autoremove -y \
-  && rm -Rf \
-    /etc/ca-certificates.conf \
-    /etc/ssl/ \
-    /etc/wgetrc \
-    /tmp/* \
-    /var/lib/apt/lists/* \
-    /var/log/alternatives.log \
-    /var/log/apt/ \
-    /var/log/dpkg.log \
-  # smoke test
-  && identify -version
 
 ARG DS_KTOOLS_VERSION="4.5.1"
 ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
@@ -53,9 +12,11 @@ ARG TARGETPLATFORM
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
 
+USER root
 WORKDIR /tmp/
 # hadolint ignore=DL3003
-RUN apt-get update \
+RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
+  && apt-get update \
   && apt-get install -y --no-install-recommends \
     build-essential='12.9' \
     ca-certificates='20230311' \
@@ -92,4 +53,5 @@ RUN apt-get update \
   && krane --version \
   && ktech --version
 
+USER ktools
 WORKDIR /data/

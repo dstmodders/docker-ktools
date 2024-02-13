@@ -90,6 +90,7 @@ jobs:
         with:
           build-args: |
             DS_KTOOLS_VERSION=${{ matrix.image.version }}
+            IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick-legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick }}
           cache-from: type=registry,ref=${{ github.repository_owner }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick }}-debian
           cache-to: type=inline
@@ -124,6 +125,7 @@ jobs:
         with:
           build-args: |
             DS_KTOOLS_VERSION=${{ matrix.image.version }}
+            IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick-legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick }}
           cache-from: type=registry,ref=${{ github.repository_owner }}/ktools:${{ matrix.image.official && 'official-' || '' }}${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick }}-alpine
           cache-to: type=inline

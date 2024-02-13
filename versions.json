@@ -2,18 +2,21 @@
   {
     "version": "4.3.0",
     "imagemagick": "6.9.13-6",
+    "imagemagick-legacy": true,
     "official": true,
     "root": "./official"
   },
   {
     "version": "4.3.1",
     "imagemagick": "6.9.13-6",
+    "imagemagick-legacy": true,
     "official": true,
     "root": "./official"
   },
   {
     "version": "4.4.0",
     "imagemagick": "6.9.13-6",
+    "imagemagick-legacy": true,
     "latest": true,
     "official": true,
     "root": "./official"
@@ -21,6 +24,7 @@
   {
     "version": "4.4.1",
     "imagemagick": "6.9.13-6",
+    "imagemagick-legacy": true,
     "root": "./latest"
   },
   {
