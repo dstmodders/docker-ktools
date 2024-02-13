@@ -22,7 +22,9 @@ jobs:
         uses: actions/setup-node@v4
         id: node
         with:
-          node-version: 16
+          node-version: 20.11.0
+      - name: Enable corepack
+        run: corepack enable
       - name: Send Slack notification
         uses: codedsolar/slack-action@v1
         if: ${{ github.event_name != 'pull_request' }}
