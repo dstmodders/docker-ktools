@@ -50,13 +50,17 @@
 [Fork releases] (recommended):
 
 ```shell
-$ docker pull dstmodders/ktools # same tag: 4.5.1-imagemagick-7.1.1-28-alpine
+$ docker pull dstmodders/ktools:latest
+# or
+$ docker pull ghcr.io/dstmodders/ktools:latest
 ```
 
 Or you can pick one of the [official releases]:
 
 ```shell
-$ docker pull dstmodders/ktools:official # same tag: official-4.4.0-imagemagick-6.9.13-6-alpine
+$ docker pull dstmodders/ktools:official
+# or
+$ docker pull ghcr.io/dstmodders/ktools:official
 ```
 
 See [tags] for a list of all available versions.
@@ -64,19 +68,19 @@ See [tags] for a list of all available versions.
 #### Shell/Bash (Linux & macOS)
 
 ```shell
-$ docker run --rm -u ktools -v "$(pwd):/data/" dstmodders/ktools ktech --version
+$ docker run --rm -v "$(pwd):/data/" dstmodders/ktools ktech --version
 ```
 
 #### CMD (Windows)
 
 ```cmd
-> docker run --rm -u ktools -v "%CD%:/data/" dstmodders/ktools ktech --version
+> docker run --rm -v "%CD%:/data/" dstmodders/ktools ktech --version
 ```
 
 #### PowerShell (Windows)
 
 ```powershell
-PS:\> docker run --rm -u ktools -v "${PWD}:/data/" dstmodders/ktools ktech --version
+PS:\> docker run --rm -v "${PWD}:/data/" dstmodders/ktools ktech --version
 ```
 
 ## Build
