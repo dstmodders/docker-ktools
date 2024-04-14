@@ -43,7 +43,7 @@
 | `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | Path to [krane]       |
 | `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | Path to [ktech]       |
 | `DS_KTOOLS_VERSION`   | `4.5.1`                | [ktools] version      |
-| `IMAGEMAGICK_VERSION` | `7.1.1-28`             | [ImageMagick] version |
+| `IMAGEMAGICK_VERSION` | `7.1.1-30`             | [ImageMagick] version |
 
 ## Usage
 

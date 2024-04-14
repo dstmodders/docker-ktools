@@ -29,7 +29,7 @@
   },
   {
     "version": "4.5.0",
-    "imagemagick": "7.1.1-28",
+    "imagemagick": "7.1.1-30",
     "root": "./latest",
     "previous": {
       "ef2d40c3fc2e675ca492371e0e539f13449a1846": {
@@ -39,7 +39,7 @@
   },
   {
     "version": "4.5.1",
-    "imagemagick": "7.1.1-28",
+    "imagemagick": "7.1.1-30",
     "latest": true,
     "root": "./latest"
   }
