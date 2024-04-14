@@ -1,0 +1,83 @@
+name: Update
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/update.yml
+      - DOCKERHUB.md
+  workflow_dispatch:
+
+env:
+  SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+  SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
+  SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+
+jobs:
+  dockerhub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - name: Send Slack notification
+        uses: codedsolar/slack-action@v1
+        if: ${{ github.event_name != 'pull_request' }}
+        id: slack
+        with:
+          fields: |
+            {STATUS}
+            {REF}
+            Short description length: Checking...
+            Description length: Checking...
+          status: in-progress
+      - name: Output additional GitHub context
+        id: github
+        run: |
+          description=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}" | \
+            jq -r '.description')
+          echo "description=$description" >> $GITHUB_OUTPUT
+      - name: Output lengths
+        id: lengths
+        run: |
+          description=$(cat ./DOCKERHUB.md | wc -c)
+          short_description=$(echo '${{ steps.github.outputs.description }}' | wc -c)
+
+          echo "description=$description" >> $GITHUB_OUTPUT
+          echo "short-description=$short_description" >> $GITHUB_OUTPUT
+      - name: Check results
+        run: |
+          description_length='${{ steps.lengths.outputs.description }}'
+          short_description='${{ steps.github.outputs.description }}'
+          short_description_length='${{ steps.lengths.outputs.short-description }}'
+
+          echo "Short description: $short_description"
+          echo "Short description length: $short_description_length"
+          echo "Description length: $description_length"
+
+          exit_code=1
+          if [ "$description_length" -gt 0 ] && [ "$description_length" -lt 25000 ] && [ "$short_description_length" -gt 0 ]; then
+            exit_code=0
+          fi
+          exit "$exit_code"
+      - name: Update Docker Hub repository overview
+        uses: peter-evans/dockerhub-description@v3
+        if: ${{ !env.ACT }}
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ github.repository_owner }}/ktools
+          short-description: ${{ steps.github.outputs.description }}
+          readme-filepath: ./DOCKERHUB.md
+      - name: Update Slack notification
+        uses: codedsolar/slack-action@v1
+        if: ${{ github.event_name != 'pull_request' && always() }}
+        with:
+          fields: |
+            {STATUS}
+            {REF}
+            Short description length: ${{ steps.lengths.outputs.short-description || 'Skipped' }}
+            Description length: ${{ steps.lengths.outputs.description || 'Skipped' }}
+          status: ${{ job.status }}
+          timestamp: ${{ steps.slack.outputs.slack-timestamp }}
