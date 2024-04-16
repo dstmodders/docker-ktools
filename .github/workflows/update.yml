@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 
 env:
+  DOCKERHUB_REPOSITORY: ${{ github.repository_owner }}/ktools
   SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
   SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
   SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
@@ -67,7 +68,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ github.repository_owner }}/ktools
+          repository: ${{ env.DOCKERHUB_REPOSITORY }}
           short-description: ${{ steps.github.outputs.description }}
           readme-filepath: ./DOCKERHUB.md
       - name: Update Slack notification
