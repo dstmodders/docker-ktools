@@ -36,11 +36,11 @@ printf "## Supported tags and respective \`Dockerfile\` links\n\n"
 for key in "${VERSIONS_KEYS[@]}"; do
   for dist in "${DISTS[@]}"; do
     commit="$COMMIT_ID"
-    version=$(jq -r ".[$key] | .version" <<< "$JSON")
-    imagemagick=$(jq -r ".[$key].imagemagick" <<< "$JSON")
-    latest=$(jq -r ".[$key].latest" <<< "$JSON")
-    official=$(jq -r ".[$key].official" <<< "$JSON")
-    previous=$(jq -r ".[$key].previous" <<< "$JSON")
+    version="$(jq -r ".[$key] | .version" <<< "$JSON")"
+    imagemagick="$(jq -r ".[$key].imagemagick" <<< "$JSON")"
+    latest="$(jq -r ".[$key].latest" <<< "$JSON")"
+    official="$(jq -r ".[$key].official" <<< "$JSON")"
+    previous="$(jq -r ".[$key].previous" <<< "$JSON")"
 
     tag_dist="$dist"
     tag_full="$version-imagemagick-$imagemagick-$dist"
@@ -75,7 +75,7 @@ for key in "${VERSIONS_KEYS[@]}"; do
 
   if [ "$previous" != "null" ]; then
     mapfile -t commits < <(jq -r 'keys[]' <<< "$previous")
-    imagemagick=$(jq -c ".[].imagemagick" <<< "$previous" | xargs)
+    imagemagick="$(jq -c ".[].imagemagick" <<< "$previous" | xargs)"
 
     for dist in "${DISTS[@]}"; do
       for commit in "${commits[@]}"; do
