@@ -29,21 +29,13 @@
 
 ## Overview
 
-[Docker] images for modding tools of Klei Entertainment's game
-[Don't Starve].
+[Docker] images for modding tools of Klei Entertainment's game [Don't Starve].
 
-- [Environment variables](#environment-variables)
 - [Usage](#usage)
+- [Supported environment variables](#supported-environment-variables)
+- [Supported build arguments](#supported-build-arguments)
+- [Supported architectures](#supported-architectures)
 - [Build](#build)
-
-## Environment variables
-
-| Name                  | Value                  | Description           |
-| --------------------- | ---------------------- | --------------------- |
-| `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | Path to [krane]       |
-| `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | Path to [ktech]       |
-| `DS_KTOOLS_VERSION`   | `4.5.1`                | [ktools] version      |
-| `IMAGEMAGICK_VERSION` | `7.1.1-30`             | [ImageMagick] version |
 
 ## Usage
 
@@ -83,42 +75,54 @@ $ docker run --rm -v "$(pwd):/data/" dstmodders/ktools ktech --version
 PS:\> docker run --rm -v "${PWD}:/data/" dstmodders/ktools ktech --version
 ```
 
+## Supported environment variables
+
+| Name                  | Value                  | Description           |
+| --------------------- | ---------------------- | --------------------- |
+| `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | [krane] path          |
+| `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | [ktech] path          |
+| `DS_KTOOLS_VERSION`   | `4.5.1`                | [ktools] version      |
+| `IMAGEMAGICK_VERSION` | `7.1.1-30`             | [ImageMagick] version |
+
+## Supported build arguments
+
+| Name                       | Image                    | Default                    | Description                          |
+| -------------------------- | ------------------------ | -------------------------- | ------------------------------------ |
+| `DS_KTOOLS_VERSION`        | `latest`<br />`official` | `4.5.1`<br />`4.4.0`       | Sets [ktools] version                |
+| `IMAGEMAGICK_IMAGE_PREFIX` | `latest`<br />`official` | -<br />`legacy-`           | Sets [ImageMagick] base image prefix |
+| `IMAGEMAGICK_VERSION`      | `latest`<br />`official` | `7.1.1-30`<br />`6.9.13-8` | Sets [ImageMagick] version           |
+
+## Supported architectures
+
+| Image      | Architecture(s)            |
+| ---------- | -------------------------- |
+| `latest`   | `linux/amd64`, `linux/386` |
+| `official` | `linux/amd64`, `linux/386` |
+
 ## Build
 
 To build images locally:
 
 ```shell
-$ docker build ./latest/alpine/ --tag='dstmodders/ktools:alpine'
-$ docker build ./latest/debian/ --tag='dstmodders/ktools:debian'
-$ docker build ./official/alpine/ --tag='dstmodders/ktools:official-alpine'
-$ docker build ./official/debian/ --tag='dstmodders/ktools:official-debian'
+$ docker build --tag='dstmodders/ktools:alpine' ./latest/alpine/
+$ docker build --tag='dstmodders/ktools:debian' ./latest/debian/
+$ docker build --tag='dstmodders/ktools:official-alpine' ./official/alpine/
+$ docker build --tag='dstmodders/ktools:official-debian' ./official/debian/
 ```
 
-To build images locally using [buildx] to target multiple platforms, ensure that
-your builder is running. If you are using [QEMU] emulation, you may also need to
-enable [qemu-user-static].
-
-In overall, to create your builder and enable [QEMU] emulation:
+Respectively, to build multi-platform images using [buildx]:
 
 ```shell
-$ docker buildx create --name mybuilder --use --bootstrap
-$ docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-```
-
-Respectively, to build multi-platform images locally:
-
-```shell
-$ docker buildx build ./latest/alpine/ --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:alpine'
-$ docker buildx build ./latest/debian/ --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:debian'
-$ docker buildx build ./official/alpine/ --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:official-alpine'
-$ docker buildx build ./official/debian/ --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:official-debian'
+$ docker buildx build --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:alpine' ./latest/alpine/
+$ docker buildx build --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:debian' ./latest/debian/
+$ docker buildx build --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:official-alpine' ./official/alpine/
+$ docker buildx build --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:official-debian' ./official/debian/
 ```
 
 ## License
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).
 
-[@nsimplex]: https://github.com/nsimplex
 [alpine size]: https://img.shields.io/docker/image-size/dstmodders/ktools/alpine?label=alpine%20size&logo=docker
 [build]: https://img.shields.io/github/actions/workflow/status/dstmodders/docker-ktools/build.yml?branch=main&label=build&logo=github
 [buildx]: https://github.com/docker/buildx
@@ -128,17 +132,10 @@ Released under the [MIT License](https://opensource.org/licenses/MIT).
 [don't starve]: https://www.klei.com/games/dont-starve
 [dstmodders/ktools]: https://github.com/dstmodders/ktools
 [fork releases]: https://github.com/dstmodders/ktools/releases
-[gcc]: https://gcc.gnu.org/
 [imagemagick]: https://imagemagick.org/index.php
 [krane]: https://github.com/nsimplex/ktools#krane
 [ktech]: https://github.com/nsimplex/ktools#ktech
 [ktools]: https://github.com/nsimplex/ktools
-[latest state]: https://github.com/nsimplex/ktools/tree/a1d1362bdb2b9aa9146d7177fbf0e351eab414ba
 [nsimplex/ktools]: https://github.com/nsimplex/ktools
 [official releases]: https://github.com/nsimplex/ktools/releases
-[official]: https://github.com/nsimplex/ktools/releases
-[qemu-user-static]: https://github.com/multiarch/qemu-user-static
-[qemu]: https://www.qemu.org/
 [tags]: https://hub.docker.com/r/dstmodders/ktools/tags
-[v4.4.0]: https://github.com/dstmodders/ktools/releases/tag/4.4.0
-[v4.4.1]: https://github.com/dstmodders/ktools/releases/tag/v4.4.1
