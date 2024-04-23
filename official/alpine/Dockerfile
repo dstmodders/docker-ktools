@@ -33,7 +33,7 @@ RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
   && make install \
   # clean
   && apk del .ktools-deps \
-  && rm -Rf /tmp/* \
+  && rm -rf /tmp/* \
   # smoke tests
   && which krane ktech \
   && krane --version \

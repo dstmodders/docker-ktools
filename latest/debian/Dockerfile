@@ -39,12 +39,12 @@ RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
     wget \
   && apt-get clean \
   && apt-get autoremove -y \
-  && rm -Rf /var/lib/apt/lists/* \
-  && rm -Rf \
+  && rm -rf \
     /etc/ca-certificates.conf \
     /etc/ssl/ \
     /root/.wget-hsts \
     /tmp/* \
+    /var/lib/apt/lists/* \
     /var/log/alternatives.log \
     /var/log/apt/ \
     /var/log/dpkg.log \
