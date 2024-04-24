@@ -32,6 +32,7 @@ jobs:
             {STATUS}
             {REF}
             Node.js: ${{ steps.node.outputs.node-version }}
+            Hadolint issues: Checking...
             Prettier issues: Checking...
           status: in-progress
       - name: Enable corepack
@@ -43,14 +44,61 @@ jobs:
       - name: Output Prettier results
         id: prettier
         run: echo "issues=$(prettier --list-different . | wc -l)" >> $GITHUB_OUTPUT
+      - name: Lint using Hadolint (latest Alpine)
+        uses: hadolint/hadolint-action@v3.1.0
+        id: hadolint-latest-alpine
+        with:
+          dockerfile: ./latest/alpine/Dockerfile
+          no-fail: true
+      - name: Lint using Hadolint (latest Debian)
+        uses: hadolint/hadolint-action@v3.1.0
+        id: hadolint-latest-debian
+        with:
+          dockerfile: ./latest/debian/Dockerfile
+          no-fail: true
+      - name: Lint using Hadolint (official Alpine)
+        uses: hadolint/hadolint-action@v3.1.0
+        id: hadolint-official-alpine
+        with:
+          dockerfile: ./official/alpine/Dockerfile
+          no-fail: true
+      - name: Lint using Hadolint (official Debian)
+        uses: hadolint/hadolint-action@v3.1.0
+        id: hadolint-official-debian
+        with:
+          dockerfile: ./official/debian/Dockerfile
+          no-fail: true
+      - name: Output Hadolint results
+        id: hadolint
+        run: |
+          latest_alpine_issues="$(echo '${{ steps.hadolint-latest-alpine.outputs.results }}' | sed '/^$/d' | sed '$!N; /^\n$/D' | wc -l)"
+          latest_debian_issues="$(echo '${{ steps.hadolint-latest-debian.outputs.results }}' | sed '/^$/d' | sed '$!N; /^\n$/D' | wc -l)"
+          official_alpine_issues="$(echo '${{ steps.hadolint-official-alpine.outputs.results }}' | sed '/^$/d' | sed '$!N; /^\n$/D' | wc -l)"
+          official_debian_issues="$(echo '${{ steps.hadolint-official-debian.outputs.results }}' | sed '/^$/d' | sed '$!N; /^\n$/D' | wc -l)"
+
+          echo "latest-alpine-issues=$latest_alpine_issues" >> $GITHUB_OUTPUT
+          echo "latest-debian-issues=$latest_debian_issues" >> $GITHUB_OUTPUT
+          echo "official-alpine-issues=$official_alpine_issues" >> $GITHUB_OUTPUT
+          echo "official-debian-issues=$official_debian_issues" >> $GITHUB_OUTPUT
+          echo "issues=$((latest_alpine_issues + latest_debian_issues + official_alpine_issues + official_debian_issues))" >> $GITHUB_OUTPUT
       - name: Check results
         run: |
+          hadolint_latest_alpine_issues="${{ steps.hadolint.outputs.latest-alpine-issues }}"
+          hadolint_latest_debian_issues="${{ steps.hadolint.outputs.latest-debian-issues }}"
+          hadolint_official_alpine_issues="${{ steps.hadolint.outputs.official-alpine-issues }}"
+          hadolint_official_debian_issues="${{ steps.hadolint.outputs.official-debian-issues }}"
+          hadolint_issues="${{ steps.hadolint.outputs.issues }}"
           prettier_issues="${{ steps.prettier.outputs.issues }}"
 
+          echo "Hadolint issues (latest Alpine): $hadolint_latest_alpine_issues"
+          echo "Hadolint issues (latest Debian): $hadolint_latest_debian_issues"
+          echo "Hadolint issues (official Alpine): $hadolint_official_alpine_issues"
+          echo "Hadolint issues (official Debian): $hadolint_official_debian_issues"
+          echo "Total Hadolint issues: $hadolint_issues"
           echo "Total Prettier issues: $prettier_issues"
 
           exit_code=1
-          if [ "$prettier_issues" = '0' ]; then
+          if [ "$prettier_issues" = '0' ] && [ "$hadolint_issues" = '0' ]; then
             exit_code=0
           fi
           exit "$exit_code"
@@ -62,6 +110,7 @@ jobs:
             {STATUS}
             {REF}
             Node.js: ${{ steps.node.outputs.node-version }}
+            Hadolint issues: ${{ steps.hadolint.outputs.issues || 'Skipped' }}
             Prettier issues: ${{ steps.prettier.outputs.issues || 'Skipped' }}
           status: ${{ job.status }}
           timestamp: ${{ steps.slack.outputs.slack-timestamp }}
