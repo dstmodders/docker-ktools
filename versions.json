@@ -1,46 +1,41 @@
-[
-  {
-    "version": "4.3.0",
-    "imagemagick": "6.9.13-8",
-    "imagemagick-legacy": true,
-    "official": true,
-    "root": "./official"
-  },
-  {
-    "version": "4.3.1",
-    "imagemagick": "6.9.13-8",
-    "imagemagick-legacy": true,
-    "official": true,
-    "root": "./official"
-  },
-  {
-    "version": "4.4.0",
-    "imagemagick": "6.9.13-8",
-    "imagemagick-legacy": true,
-    "latest": true,
-    "official": true,
-    "root": "./official"
-  },
-  {
-    "version": "4.4.1",
-    "imagemagick": "6.9.13-8",
-    "imagemagick-legacy": true,
-    "root": "./latest"
-  },
-  {
-    "version": "4.5.0",
-    "imagemagick": "7.1.1-30",
-    "root": "./latest",
-    "previous": {
-      "ef2d40c3fc2e675ca492371e0e539f13449a1846": {
-        "imagemagick": "7.1.0-5"
+{
+  "latest": [
+    {
+      "version": "4.4.1",
+      "imagemagick_version": "6.9.13-8",
+      "imagemagick_legacy": true
+    },
+    {
+      "version": "4.5.0",
+      "imagemagick_version": "7.1.1-30",
+      "previous": {
+        "ef2d40c3fc2e675ca492371e0e539f13449a1846": {
+          "imagemagick_version": "7.1.0-5"
+        }
       }
+    },
+    {
+      "version": "4.5.1",
+      "imagemagick_version": "7.1.1-30",
+      "latest": true
     }
-  },
-  {
-    "version": "4.5.1",
-    "imagemagick": "7.1.1-30",
-    "latest": true,
-    "root": "./latest"
-  }
-]
+  ],
+  "official": [
+    {
+      "version": "4.3.0",
+      "imagemagick_version": "6.9.13-8",
+      "imagemagick_legacy": true
+    },
+    {
+      "version": "4.3.1",
+      "imagemagick_version": "6.9.13-8",
+      "imagemagick_legacy": true
+    },
+    {
+      "version": "4.4.0",
+      "imagemagick_version": "6.9.13-8",
+      "imagemagick_legacy": true,
+      "latest": true
+    }
+  ]
+}
