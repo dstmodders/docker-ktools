@@ -23,8 +23,6 @@ jobs:
         id: node
         with:
           node-version: 20.11.0
-      - name: Enable corepack
-        run: corepack enable
       - name: Send Slack notification
         uses: codedsolar/slack-action@v1
         if: ${{ github.event_name != 'pull_request' }}
@@ -36,28 +34,26 @@ jobs:
             Node.js: ${{ steps.node.outputs.node-version }}
             Prettier issues: Checking...
           status: in-progress
+      - name: Enable corepack
+        run: corepack enable
       - name: Install Prettier
         run: yarn global add prettier
-      - name: Lint
-        id: lint
+      - name: Lint using Prettier
+        run: prettier --check . || true
+      - name: Output Prettier results
+        id: prettier
+        run: echo "issues=$(prettier --list-different . | wc -l)" >> $GITHUB_OUTPUT
+      - name: Check results
         run: |
-          export_output() {
-            env=${1^^}
-            env=${env//-/_}
-            export "$env=$2"
-            echo "export $env=$2"
-            echo "$1=$2" >> $GITHUB_OUTPUT
-          }
+          prettier_issues="${{ steps.prettier.outputs.issues }}"
 
-          # output
-          export_output 'prettier-issues' "$(prettier --list-different . | wc -l)"
+          echo "Total Prettier issues: $prettier_issues"
 
-          # lint
-          echo '---'
-          prettier --check . || true
-
-          # status
-          if [ "$PRETTIER_ISSUES" -eq 0 ]; then exit 0; else exit 1; fi
+          exit_code=1
+          if [ "$prettier_issues" = '0' ]; then
+            exit_code=0
+          fi
+          exit "$exit_code"
       - name: Update Slack notification
         uses: codedsolar/slack-action@v1
         if: ${{ github.event_name != 'pull_request' && always() }}
@@ -66,6 +62,6 @@ jobs:
             {STATUS}
             {REF}
             Node.js: ${{ steps.node.outputs.node-version }}
-            Prettier issues: ${{ steps.lint.outputs.prettier-issues || 'Skipped' }}
+            Prettier issues: ${{ steps.prettier.outputs.issues || 'Skipped' }}
           status: ${{ job.status }}
           timestamp: ${{ steps.slack.outputs.slack-timestamp }}
