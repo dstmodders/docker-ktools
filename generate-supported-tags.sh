@@ -47,7 +47,6 @@ for key in "${LATEST_VERSIONS_KEYS[@]}"; do
     version="$(jq -r ".latest | .[$key] | .version" <<< "$JSON")"
     imagemagick="$(jq -r ".latest | .[$key] | .imagemagick_version" <<< "$JSON")"
     latest="$(jq -r ".latest | .[$key] | .latest" <<< "$JSON")"
-    previous="$(jq -r ".latest | .[$key] | .previous" <<< "$JSON")"
 
     tag_version_imagemagick_dist="$version-imagemagick-$imagemagick-$dist"
     tag_version_dist="$version-$dist"
@@ -71,19 +70,6 @@ for key in "${LATEST_VERSIONS_KEYS[@]}"; do
 
     print_url "$tags" "$commit" "latest/$dist"
   done
-
-  if [ "$previous" != "null" ]; then
-    mapfile -t commits < <(jq -r 'keys[]' <<< "$previous")
-    imagemagick="$(jq -c ".[].imagemagick_version" <<< "$previous" | xargs)"
-
-    for dist in "${DISTS[@]}"; do
-      for commit in "${commits[@]}"; do
-        tag_version_imagemagick_dist="$version-imagemagick-$imagemagick-$dist"
-        tags="\`$tag_version_imagemagick_dist\`"
-        print_url "$tags" "$commit" "latest/$dist"
-      done
-    done
-  fi
 done
 
 # reference:
@@ -97,7 +83,6 @@ for key in "${OFFICIAL_VERSIONS_KEYS[@]}"; do
     version="$(jq -r ".official | .[$key] | .version" <<< "$JSON")"
     imagemagick="$(jq -r ".official | .[$key] | .imagemagick_version" <<< "$JSON")"
     latest="$(jq -r ".official | .[$key] | .latest" <<< "$JSON")"
-    previous="$(jq -r ".official | .[$key] | .previous" <<< "$JSON")"
 
     tag_version_imagemagick_dist="official-$version-imagemagick-$imagemagick-$dist"
     tag_version_dist="official-$version-$dist"
@@ -121,17 +106,4 @@ for key in "${OFFICIAL_VERSIONS_KEYS[@]}"; do
 
     print_url "$tags" "$commit" "official/$dist"
   done
-
-  if [ "$previous" != "null" ]; then
-    mapfile -t commits < <(jq -r 'keys[]' <<< "$previous")
-    imagemagick="$(jq -c ".[].imagemagick_version" <<< "$previous" | xargs)"
-
-    for dist in "${DISTS[@]}"; do
-      for commit in "${commits[@]}"; do
-        tag_version_imagemagick_dist="$version-imagemagick-$imagemagick-$dist"
-        tags="\`$tag_version_imagemagick_dist\`"
-        print_url "$tags" "$commit" "official/$dist"
-      done
-    done
-  fi
 done

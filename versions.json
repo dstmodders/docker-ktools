@@ -7,12 +7,7 @@
     },
     {
       "version": "4.5.0",
-      "imagemagick_version": "7.1.1-30",
-      "previous": {
-        "ef2d40c3fc2e675ca492371e0e539f13449a1846": {
-          "imagemagick_version": "7.1.0-5"
-        }
-      }
+      "imagemagick_version": "7.1.1-30"
     },
     {
       "version": "4.5.1",
