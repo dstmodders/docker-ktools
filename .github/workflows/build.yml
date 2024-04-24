@@ -92,7 +92,7 @@ jobs:
         with:
           build-args: |
             DS_KTOOLS_VERSION=${{ matrix.image.version }}
-            ${{ format('IMAGEMAGICK_IMAGE_PREFIX={0}', ${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}) }}
+            IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
           cache-from: type=registry,ref=${{ env.DOCKERHUB_REPOSITORY }}:official-${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian
           cache-to: type=inline
@@ -126,7 +126,7 @@ jobs:
         with:
           build-args: |
             DS_KTOOLS_VERSION=${{ matrix.image.version }}
-            ${{ format('IMAGEMAGICK_IMAGE_PREFIX={0}', ${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}) }}
+            IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
           cache-from: type=registry,ref=${{ env.DOCKERHUB_REPOSITORY }}:official-${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine
           cache-to: type=inline
@@ -206,7 +206,7 @@ jobs:
         with:
           build-args: |
             DS_KTOOLS_VERSION=${{ matrix.image.version }}
-            ${{ format('IMAGEMAGICK_IMAGE_PREFIX={0}', ${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}) }}
+            IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
           cache-from: type=registry,ref=${{ env.DOCKERHUB_REPOSITORY }}:${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian
           cache-to: type=inline
@@ -237,7 +237,7 @@ jobs:
         with:
           build-args: |
             DS_KTOOLS_VERSION=${{ matrix.image.version }}
-            ${{ format('IMAGEMAGICK_IMAGE_PREFIX={0}', ${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}) }}
+            IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
           cache-from: type=registry,ref=${{ env.DOCKERHUB_REPOSITORY }}:${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine
           cache-to: type=inline
