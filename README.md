@@ -12,18 +12,18 @@
 
 ## Supported tags and respective `Dockerfile` links
 
-- [`4.5.1-imagemagick-7.1.1-30-alpine`, `4.5.1-alpine`, `4.5.1`, `alpine`, `latest`](https://github.com/dstmodders/docker-ktools/blob/938ebaf52f8b441fcd64891a23c3060bb167daad/latest/alpine/Dockerfile)
-- [`4.5.1-imagemagick-7.1.1-30-debian`, `4.5.1-debian`, `debian`](https://github.com/dstmodders/docker-ktools/blob/938ebaf52f8b441fcd64891a23c3060bb167daad/latest/debian/Dockerfile)
-- [`4.5.0-imagemagick-7.1.1-30-alpine`, `4.5.0-alpine`, `4.5.0`](https://github.com/dstmodders/docker-ktools/blob/938ebaf52f8b441fcd64891a23c3060bb167daad/latest/alpine/Dockerfile)
-- [`4.5.0-imagemagick-7.1.1-30-debian`, `4.5.0-debian`](https://github.com/dstmodders/docker-ktools/blob/938ebaf52f8b441fcd64891a23c3060bb167daad/latest/debian/Dockerfile)
-- [`4.4.1-imagemagick-6.9.13-8-alpine`, `4.4.1-alpine`, `4.4.1`](https://github.com/dstmodders/docker-ktools/blob/938ebaf52f8b441fcd64891a23c3060bb167daad/latest/alpine/Dockerfile)
-- [`4.4.1-imagemagick-6.9.13-8-debian`, `4.4.1-debian`](https://github.com/dstmodders/docker-ktools/blob/938ebaf52f8b441fcd64891a23c3060bb167daad/latest/debian/Dockerfile)
-- [`official-4.4.0-imagemagick-6.9.13-8-alpine`, `official-4.4.0-alpine`, `official-4.4.0`, `official-alpine`, `official-latest`, `official`](https://github.com/dstmodders/docker-ktools/blob/938ebaf52f8b441fcd64891a23c3060bb167daad/official/alpine/Dockerfile)
-- [`official-4.4.0-imagemagick-6.9.13-8-debian`, `official-4.4.0-debian`, `official-debian`](https://github.com/dstmodders/docker-ktools/blob/938ebaf52f8b441fcd64891a23c3060bb167daad/official/debian/Dockerfile)
-- [`official-4.3.1-imagemagick-6.9.13-8-alpine`, `official-4.3.1-alpine`, `official-4.3.1`](https://github.com/dstmodders/docker-ktools/blob/938ebaf52f8b441fcd64891a23c3060bb167daad/official/alpine/Dockerfile)
-- [`official-4.3.1-imagemagick-6.9.13-8-debian`, `official-4.3.1-debian`](https://github.com/dstmodders/docker-ktools/blob/938ebaf52f8b441fcd64891a23c3060bb167daad/official/debian/Dockerfile)
-- [`official-4.3.0-imagemagick-6.9.13-8-alpine`, `official-4.3.0-alpine`, `official-4.3.0`](https://github.com/dstmodders/docker-ktools/blob/938ebaf52f8b441fcd64891a23c3060bb167daad/official/alpine/Dockerfile)
-- [`official-4.3.0-imagemagick-6.9.13-8-debian`, `official-4.3.0-debian`](https://github.com/dstmodders/docker-ktools/blob/938ebaf52f8b441fcd64891a23c3060bb167daad/official/debian/Dockerfile)
+- [`4.5.1-imagemagick-7.1.1-30-alpine`, `4.5.1-alpine`, `4.5.1`, `alpine`, `latest`](https://github.com/dstmodders/docker-ktools/blob/5322a24f20139f6db66af1f25ab5ac7c73d4847c/latest/alpine/Dockerfile)
+- [`4.5.1-imagemagick-7.1.1-30-debian`, `4.5.1-debian`, `debian`](https://github.com/dstmodders/docker-ktools/blob/5322a24f20139f6db66af1f25ab5ac7c73d4847c/latest/debian/Dockerfile)
+- [`4.5.0-imagemagick-7.1.1-30-alpine`, `4.5.0-alpine`, `4.5.0`](https://github.com/dstmodders/docker-ktools/blob/5322a24f20139f6db66af1f25ab5ac7c73d4847c/latest/alpine/Dockerfile)
+- [`4.5.0-imagemagick-7.1.1-30-debian`, `4.5.0-debian`](https://github.com/dstmodders/docker-ktools/blob/5322a24f20139f6db66af1f25ab5ac7c73d4847c/latest/debian/Dockerfile)
+- [`4.4.1-imagemagick-6.9.13-8-alpine`, `4.4.1-alpine`, `4.4.1`](https://github.com/dstmodders/docker-ktools/blob/5322a24f20139f6db66af1f25ab5ac7c73d4847c/latest/alpine/Dockerfile)
+- [`4.4.1-imagemagick-6.9.13-8-debian`, `4.4.1-debian`](https://github.com/dstmodders/docker-ktools/blob/5322a24f20139f6db66af1f25ab5ac7c73d4847c/latest/debian/Dockerfile)
+- [`official-4.4.0-imagemagick-6.9.13-8-alpine`, `official-4.4.0-alpine`, `official-4.4.0`, `official-alpine`, `official-latest`, `official`](https://github.com/dstmodders/docker-ktools/blob/5322a24f20139f6db66af1f25ab5ac7c73d4847c/official/alpine/Dockerfile)
+- [`official-4.4.0-imagemagick-6.9.13-8-debian`, `official-4.4.0-debian`, `official-debian`](https://github.com/dstmodders/docker-ktools/blob/5322a24f20139f6db66af1f25ab5ac7c73d4847c/official/debian/Dockerfile)
+- [`official-4.3.1-imagemagick-6.9.13-8-alpine`, `official-4.3.1-alpine`, `official-4.3.1`](https://github.com/dstmodders/docker-ktools/blob/5322a24f20139f6db66af1f25ab5ac7c73d4847c/official/alpine/Dockerfile)
+- [`official-4.3.1-imagemagick-6.9.13-8-debian`, `official-4.3.1-debian`](https://github.com/dstmodders/docker-ktools/blob/5322a24f20139f6db66af1f25ab5ac7c73d4847c/official/debian/Dockerfile)
+- [`official-4.3.0-imagemagick-6.9.13-8-alpine`, `official-4.3.0-alpine`, `official-4.3.0`](https://github.com/dstmodders/docker-ktools/blob/5322a24f20139f6db66af1f25ab5ac7c73d4847c/official/alpine/Dockerfile)
+- [`official-4.3.0-imagemagick-6.9.13-8-debian`, `official-4.3.0-debian`](https://github.com/dstmodders/docker-ktools/blob/5322a24f20139f6db66af1f25ab5ac7c73d4847c/official/debian/Dockerfile)
 
 ## Overview
 
