@@ -36,7 +36,11 @@ cd "$BASE_DIR" || exit 1
 
 printf "## Supported tags and respective \`Dockerfile\` links\n\n"
 
-# reference: 4.5.1-imagemagick-7.1.1-30-alpine, 4.5.1, alpine, latest
+# reference:
+#   4.5.1-imagemagick-7.1.1-30-alpine, 4.5.1-alpine, 4.5.1, alpine, latest
+#   4.5.1-imagemagick-7.1.1-30-debian, 4.5.1-debian, debian
+#   4.5.0-imagemagick-7.1.1-30-alpine, 4.5.0-alpine, 4.5.0
+#   4.5.0-imagemagick-7.1.1-30-debian, 4.5.0-debian
 for key in "${LATEST_VERSIONS_KEYS[@]}"; do
   for dist in "${DISTS[@]}"; do
     commit="$COMMIT_ID"
@@ -45,19 +49,25 @@ for key in "${LATEST_VERSIONS_KEYS[@]}"; do
     latest="$(jq -r ".latest | .[$key] | .latest" <<< "$JSON")"
     previous="$(jq -r ".latest | .[$key] | .previous" <<< "$JSON")"
 
-    tag_dist="$dist"
-    tag_full="$version-imagemagick-$imagemagick-$dist"
+    tag_version_imagemagick_dist="$version-imagemagick-$imagemagick-$dist"
+    tag_version_dist="$version-$dist"
     tag_version="$version"
+    tag_dist="$dist"
 
-    tags=''
-    if [ "$dist" == 'alpine' ]; then
-      tags="\`$tag_full\`, \`$tag_version\`, \`$tag_dist\`"
-      if [ "$latest" == 'true' ]; then
-        tags="$tags, \`latest\`"
-      fi
-    else
-      tags="\`$tag_full\`, \`$tag_dist\`"
-    fi
+    tags="\`$tag_version_imagemagick_dist\`, \`$tag_version_dist\`"
+    case "$dist" in
+      alpine)
+        tags="$tags, \`$tag_version\`"
+        if [ "$latest" == 'true' ]; then
+          tags="$tags, \`$tag_dist\`, \`latest\`"
+        fi
+        ;;
+      debian)
+        if [ "$latest" == 'true' ]; then
+          tags="$tags, \`$tag_dist\`"
+        fi
+        ;;
+    esac
 
     print_url "$tags" "$commit" "latest/$dist"
   done
@@ -68,15 +78,19 @@ for key in "${LATEST_VERSIONS_KEYS[@]}"; do
 
     for dist in "${DISTS[@]}"; do
       for commit in "${commits[@]}"; do
-        tag_full="$version-imagemagick-$imagemagick-$dist"
-        tags="\`$tag_full\`"
+        tag_version_imagemagick_dist="$version-imagemagick-$imagemagick-$dist"
+        tags="\`$tag_version_imagemagick_dist\`"
         print_url "$tags" "$commit" "latest/$dist"
       done
     done
   fi
 done
 
-# reference: official-4.4.0-imagemagick-6.9.13-8-alpine, official-4.4.0, official-alpine, official-latest
+# reference:
+#   official-4.4.0-imagemagick-6.9.13-8-alpine, official-4.4.0-alpine, official-4.4.0, official-alpine, official-latest, official
+#   official-4.4.0-imagemagick-6.9.13-8-debian, official-4.4.0-debian, official-debian
+#   official-4.3.1-imagemagick-6.9.13-8-alpine, official-4.3.1-alpine, official-4.3.1
+#   official-4.3.1-imagemagick-6.9.13-8-debian, official-4.3.1-debian
 for key in "${OFFICIAL_VERSIONS_KEYS[@]}"; do
   for dist in "${DISTS[@]}"; do
     commit="$COMMIT_ID"
@@ -85,19 +99,25 @@ for key in "${OFFICIAL_VERSIONS_KEYS[@]}"; do
     latest="$(jq -r ".official | .[$key] | .latest" <<< "$JSON")"
     previous="$(jq -r ".official | .[$key] | .previous" <<< "$JSON")"
 
-    tag_dist="official-$dist"
-    tag_full="official-$version-imagemagick-$imagemagick-$dist"
+    tag_version_imagemagick_dist="official-$version-imagemagick-$imagemagick-$dist"
+    tag_version_dist="official-$version-$dist"
     tag_version="official-$version"
+    tag_dist="official-$dist"
 
-    tags=''
-    if [ "$dist" == 'alpine' ]; then
-      tags="\`$tag_full\`, \`$tag_version\`, \`$tag_dist\`"
-      if [ "$latest" == 'true' ]; then
-        tags="$tags, \`official-latest\`"
-      fi
-    else
-      tags="\`$tag_full\`, \`$tag_dist\`"
-    fi
+    tags="\`$tag_version_imagemagick_dist\`, \`$tag_version_dist\`"
+    case "$dist" in
+      alpine)
+        tags="$tags, \`$tag_version\`"
+        if [ "$latest" == 'true' ]; then
+          tags="$tags, \`$tag_dist\`, \`official-latest\`, \`official\`"
+        fi
+        ;;
+      debian)
+        if [ "$latest" == 'true' ]; then
+          tags="$tags, \`$tag_dist\`"
+        fi
+        ;;
+    esac
 
     print_url "$tags" "$commit" "official/$dist"
   done
@@ -108,8 +128,8 @@ for key in "${OFFICIAL_VERSIONS_KEYS[@]}"; do
 
     for dist in "${DISTS[@]}"; do
       for commit in "${commits[@]}"; do
-        tag_full="$version-imagemagick-$imagemagick-$dist"
-        tags="\`$tag_full\`"
+        tag_version_imagemagick_dist="$version-imagemagick-$imagemagick-$dist"
+        tags="\`$tag_version_imagemagick_dist\`"
         print_url "$tags" "$commit" "official/$dist"
       done
     done
