@@ -43,17 +43,16 @@ printf "## Supported tags and respective \`Dockerfile\` links\n\n"
 #   4.5.0-imagemagick-7.1.1-30-debian, 4.5.0-debian
 for key in "${LATEST_VERSIONS_KEYS[@]}"; do
   for dist in "${DISTS[@]}"; do
-    commit="$COMMIT_ID"
-    version="$(jq -r ".latest | .[$key] | .version" <<< "$JSON")"
-    imagemagick="$(jq -r ".latest | .[$key] | .imagemagick_version" <<< "$JSON")"
+    imagemagick_version="$(jq -r ".latest | .[$key] | .imagemagick_version" <<< "$JSON")"
     latest="$(jq -r ".latest | .[$key] | .latest" <<< "$JSON")"
+    version="$(jq -r ".latest | .[$key] | .version" <<< "$JSON")"
 
-    tag_version_imagemagick_dist="$version-imagemagick-$imagemagick-$dist"
+    tag_version_imagemagick_version_dist="$version-imagemagick-$imagemagick_version-$dist"
     tag_version_dist="$version-$dist"
     tag_version="$version"
     tag_dist="$dist"
 
-    tags="\`$tag_version_imagemagick_dist\`, \`$tag_version_dist\`"
+    tags="\`$tag_version_imagemagick_version_dist\`, \`$tag_version_dist\`"
     case "$dist" in
       alpine)
         tags="$tags, \`$tag_version\`"
@@ -68,7 +67,7 @@ for key in "${LATEST_VERSIONS_KEYS[@]}"; do
         ;;
     esac
 
-    print_url "$tags" "$commit" "latest/$dist"
+    print_url "$tags" "$COMMIT_ID" "latest/$dist"
   done
 done
 
@@ -79,22 +78,22 @@ done
 #   official-4.3.1-imagemagick-6.9.13-8-debian, official-4.3.1-debian
 for key in "${OFFICIAL_VERSIONS_KEYS[@]}"; do
   for dist in "${DISTS[@]}"; do
-    commit="$COMMIT_ID"
-    version="$(jq -r ".official | .[$key] | .version" <<< "$JSON")"
-    imagemagick="$(jq -r ".official | .[$key] | .imagemagick_version" <<< "$JSON")"
+    prefix='official-'
+    imagemagick_version="$(jq -r ".official | .[$key] | .imagemagick_version" <<< "$JSON")"
     latest="$(jq -r ".official | .[$key] | .latest" <<< "$JSON")"
+    version="$(jq -r ".official | .[$key] | .version" <<< "$JSON")"
 
-    tag_version_imagemagick_dist="official-$version-imagemagick-$imagemagick-$dist"
-    tag_version_dist="official-$version-$dist"
-    tag_version="official-$version"
-    tag_dist="official-$dist"
+    tag_version_imagemagick_version_dist="$prefix$version-imagemagick-$imagemagick_version-$dist"
+    tag_version_dist="$prefix$version-$dist"
+    tag_version="$prefix$version"
+    tag_dist="$prefix$dist"
 
-    tags="\`$tag_version_imagemagick_dist\`, \`$tag_version_dist\`"
+    tags="\`$tag_version_imagemagick_version_dist\`, \`$tag_version_dist\`"
     case "$dist" in
       alpine)
         tags="$tags, \`$tag_version\`"
         if [ "$latest" == 'true' ]; then
-          tags="$tags, \`$tag_dist\`, \`official-latest\`, \`official\`"
+          tags="$tags, \`$tag_dist\`, \`$(printf '%slatest' "$prefix")\`, \`official\`"
         fi
         ;;
       debian)
@@ -104,6 +103,6 @@ for key in "${OFFICIAL_VERSIONS_KEYS[@]}"; do
         ;;
     esac
 
-    print_url "$tags" "$commit" "official/$dist"
+    print_url "$tags" "$COMMIT_ID" "official/$dist"
   done
 done
