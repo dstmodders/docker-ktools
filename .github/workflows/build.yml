@@ -31,8 +31,10 @@ jobs:
         id: set-matrix
         run: |
           JSON=$(cat ./versions.json)
-          echo "latest=$(jq -cM .latest <<< $JSON)" >> $GITHUB_OUTPUT
-          echo "official=$(jq -cM .official <<< $JSON)" >> $GITHUB_OUTPUT
+          {
+            echo "latest=$(jq -cM .latest <<< "$JSON")"
+            echo "official=$(jq -cM .official <<< "$JSON")"
+          } >> "$GITHUB_OUTPUT"
 
   official:
     needs: prepare
