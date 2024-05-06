@@ -152,7 +152,7 @@ jobs:
           timestamp: ${{ steps.slack.outputs.slack-timestamp }}
 
   latest:
-    needs: prepare
+    needs: [prepare, official]
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
