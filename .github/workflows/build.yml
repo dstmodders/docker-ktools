@@ -46,6 +46,19 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
+      - name: Set general outputs
+        id: general
+        run: |
+          dockerfiles_version="$(echo '${{ hashFiles('official/**/Dockerfile') }}')"
+          dockerfiles_version_short="$(echo "$dockerfiles_version" | cut -c 1-7)"
+
+          echo "Dockerfiles version: $dockerfiles_version"
+          echo "Dockerfiles version (short): $dockerfiles_version_short"
+
+          {
+            echo "dockerfiles_version=$dockerfiles_version"
+            echo "dockerfiles_version_short=$dockerfiles_version_short"
+          } >> "$GITHUB_OUTPUT"
       - name: Send Slack notification
         uses: codedsolar/slack-action@v1
         if: ${{ github.event_name != 'pull_request' }}
@@ -88,6 +101,14 @@ jobs:
             type=raw,value=${{ matrix.image.version }}-debian
             type=raw,value=${{ matrix.image.version }}
             ${{ matrix.image.latest && 'type=raw,value=debian' || '' }}
+      - name: Cache Docker layers (Debian)
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-debian-cache
+          key: ${{ format('{0}-imagemagick-{1}-debian-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles_version_short) }}
+          restore-keys: |
+            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-${{ steps.general.outputs.dockerfiles_version_short }}
+            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-
       - name: Build a Debian image
         uses: docker/build-push-action@v5
         id: debian
@@ -96,8 +117,8 @@ jobs:
             DS_KTOOLS_VERSION=${{ matrix.image.version }}
             IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
-          cache-from: type=registry,ref=${{ env.DOCKERHUB_REPOSITORY }}:official-${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian
-          cache-to: type=inline
+          cache-from: type=local,src=/tmp/.buildx-debian-cache
+          cache-to: type=local,dest=/tmp/.buildx-debian-cache-new,mode=max
           context: .
           file: ./official/debian/Dockerfile
           labels: ${{ steps.debian-meta.outputs.labels }}
@@ -122,6 +143,14 @@ jobs:
             type=raw,value=${{ matrix.image.version }}
             ${{ matrix.image.latest && 'type=raw,value=alpine' || '' }}
             ${{ matrix.image.latest && 'type=raw,prefix=,value=official' || '' }}
+      - name: Cache Docker layers (Alpine)
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-alpine-cache
+          key: ${{ format('{0}-imagemagick-{1}-alpine-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles_version_short) }}
+          restore-keys: |
+            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-${{ steps.general.outputs.dockerfiles_version_short }}
+            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-
       - name: Build an Alpine image
         uses: docker/build-push-action@v5
         id: alpine
@@ -130,8 +159,8 @@ jobs:
             DS_KTOOLS_VERSION=${{ matrix.image.version }}
             IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
-          cache-from: type=registry,ref=${{ env.DOCKERHUB_REPOSITORY }}:official-${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine
-          cache-to: type=inline
+          cache-from: type=local,src=/tmp/.buildx-alpine-cache
+          cache-to: type=local,dest=/tmp/.buildx-alpine-cache-new,mode=max
           context: .
           file: ./official/alpine/Dockerfile
           labels: ${{ steps.alpine-meta.outputs.labels }}
@@ -139,6 +168,11 @@ jobs:
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.alpine-meta.outputs.tags }}
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-debian-cache /tmp/.buildx-alpine-cache
+          mv /tmp/.buildx-debian-cache-new /tmp/.buildx-debian-cache
+          mv /tmp/.buildx-alpine-cache-new /tmp/.buildx-alpine-cache
       - name: Update Slack notification
         uses: codedsolar/slack-action@v1
         if: ${{ github.event_name != 'pull_request' && always() }}
@@ -161,6 +195,19 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v4
+      - name: Set general outputs
+        id: general
+        run: |
+          dockerfiles_version="$(echo '${{ hashFiles('latest/**/Dockerfile') }}')"
+          dockerfiles_version_short="$(echo "$dockerfiles_version" | cut -c 1-7)"
+
+          echo "Dockerfiles version: $dockerfiles_version"
+          echo "Dockerfiles version (short): $dockerfiles_version_short"
+
+          {
+            echo "dockerfiles_version=$dockerfiles_version"
+            echo "dockerfiles_version_short=$dockerfiles_version_short"
+          } >> "$GITHUB_OUTPUT"
       - name: Send Slack notification
         uses: codedsolar/slack-action@v1
         if: ${{ github.event_name != 'pull_request' }}
@@ -202,6 +249,14 @@ jobs:
             type=raw,value=${{ matrix.image.version }}-debian
             type=raw,value=${{ matrix.image.version }}
             ${{ matrix.image.latest && 'type=raw,value=debian' || '' }}
+      - name: Cache Docker layers (Debian)
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-debian-cache
+          key: ${{ format('{0}-imagemagick-{1}-debian-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles_version_short) }}
+          restore-keys: |
+            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-${{ steps.general.outputs.dockerfiles_version_short }}
+            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-
       - name: Build a Debian image
         uses: docker/build-push-action@v5
         id: debian
@@ -210,8 +265,8 @@ jobs:
             DS_KTOOLS_VERSION=${{ matrix.image.version }}
             IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
-          cache-from: type=registry,ref=${{ env.DOCKERHUB_REPOSITORY }}:${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian
-          cache-to: type=inline
+          cache-from: type=local,src=/tmp/.buildx-debian-cache
+          cache-to: type=local,dest=/tmp/.buildx-debian-cache-new,mode=max
           context: .
           file: ./latest/debian/Dockerfile
           labels: ${{ steps.debian-meta.outputs.labels }}
@@ -233,6 +288,14 @@ jobs:
             type=raw,value=${{ matrix.image.version }}-alpine
             type=raw,value=${{ matrix.image.version }}
             ${{ matrix.image.latest && 'type=raw,value=alpine' || '' }}
+      - name: Cache Docker layers (Alpine)
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-alpine-cache
+          key: ${{ format('{0}-imagemagick-{1}-alpine-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles_version_short) }}
+          restore-keys: |
+            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-${{ steps.general.outputs.dockerfiles_version_short }}
+            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-
       - name: Build an Alpine image
         uses: docker/build-push-action@v5
         id: alpine
@@ -241,8 +304,8 @@ jobs:
             DS_KTOOLS_VERSION=${{ matrix.image.version }}
             IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
-          cache-from: type=registry,ref=${{ env.DOCKERHUB_REPOSITORY }}:${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine
-          cache-to: type=inline
+          cache-from: type=local,src=/tmp/.buildx-alpine-cache
+          cache-to: type=local,dest=/tmp/.buildx-alpine-cache-new,mode=max
           context: .
           file: ./latest/alpine/Dockerfile
           labels: ${{ steps.alpine-meta.outputs.labels }}
@@ -250,6 +313,11 @@ jobs:
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.alpine-meta.outputs.tags }}
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-debian-cache /tmp/.buildx-alpine-cache
+          mv /tmp/.buildx-debian-cache-new /tmp/.buildx-debian-cache
+          mv /tmp/.buildx-alpine-cache-new /tmp/.buildx-alpine-cache
       - name: Update Slack notification
         uses: codedsolar/slack-action@v1
         if: ${{ github.event_name != 'pull_request' && always() }}
