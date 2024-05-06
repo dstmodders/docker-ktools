@@ -49,7 +49,7 @@ jobs:
       - name: Set general outputs
         id: general
         run: |
-          dockerfiles_version="$(echo '${{ hashFiles('official/**/Dockerfile') }}')"
+          dockerfiles_version='${{ hashFiles('official/**/Dockerfile') }}'
           dockerfiles_version_short="$(echo "$dockerfiles_version" | cut -c 1-7)"
 
           echo "Dockerfiles version: $dockerfiles_version"
@@ -198,7 +198,7 @@ jobs:
       - name: Set general outputs
         id: general
         run: |
-          dockerfiles_version="$(echo '${{ hashFiles('latest/**/Dockerfile') }}')"
+          dockerfiles_version='${{ hashFiles('latest/**/Dockerfile') }}'
           dockerfiles_version_short="$(echo "$dockerfiles_version" | cut -c 1-7)"
 
           echo "Dockerfiles version: $dockerfiles_version"
