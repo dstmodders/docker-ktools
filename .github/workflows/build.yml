@@ -30,10 +30,10 @@ jobs:
       - name: Set matrix
         id: set-matrix
         run: |
-          JSON=$(cat ./versions.json)
+          json="$(cat ./versions.json)"
           {
-            echo "latest=$(jq -cM .latest <<< "$JSON")"
-            echo "official=$(jq -cM .official <<< "$JSON")"
+            echo "latest=$(jq -cM .latest <<< "$json")"
+            echo "official=$(jq -cM .official <<< "$json")"
           } >> "$GITHUB_OUTPUT"
 
   official:
@@ -56,8 +56,8 @@ jobs:
           echo "Dockerfiles version (short): $dockerfiles_version_short"
 
           {
-            echo "dockerfiles_version=$dockerfiles_version"
-            echo "dockerfiles_version_short=$dockerfiles_version_short"
+            echo "dockerfiles-version=$dockerfiles_version"
+            echo "dockerfiles-version-short=$dockerfiles_version_short"
           } >> "$GITHUB_OUTPUT"
       - name: Send Slack notification
         uses: codedsolar/slack-action@v1
@@ -105,9 +105,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-debian-cache
-          key: ${{ format('{0}-imagemagick-{1}-debian-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles_version_short) }}
+          key: ${{ format('{0}-imagemagick-{1}-debian-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles-version-short) }}
           restore-keys: |
-            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-${{ steps.general.outputs.dockerfiles_version_short }}
+            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-${{ steps.general.outputs.dockerfiles-version-short }}
             ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-
       - name: Build a Debian image
         uses: docker/build-push-action@v5
@@ -147,9 +147,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-alpine-cache
-          key: ${{ format('{0}-imagemagick-{1}-alpine-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles_version_short) }}
+          key: ${{ format('{0}-imagemagick-{1}-alpine-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles-version-short) }}
           restore-keys: |
-            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-${{ steps.general.outputs.dockerfiles_version_short }}
+            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-${{ steps.general.outputs.dockerfiles-version-short }}
             ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-
       - name: Build an Alpine image
         uses: docker/build-push-action@v5
@@ -205,8 +205,8 @@ jobs:
           echo "Dockerfiles version (short): $dockerfiles_version_short"
 
           {
-            echo "dockerfiles_version=$dockerfiles_version"
-            echo "dockerfiles_version_short=$dockerfiles_version_short"
+            echo "dockerfiles-version=$dockerfiles_version"
+            echo "dockerfiles-version-short=$dockerfiles_version_short"
           } >> "$GITHUB_OUTPUT"
       - name: Send Slack notification
         uses: codedsolar/slack-action@v1
@@ -253,9 +253,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-debian-cache
-          key: ${{ format('{0}-imagemagick-{1}-debian-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles_version_short) }}
+          key: ${{ format('{0}-imagemagick-{1}-debian-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles-version-short) }}
           restore-keys: |
-            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-${{ steps.general.outputs.dockerfiles_version_short }}
+            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-${{ steps.general.outputs.dockerfiles-version-short }}
             ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-
       - name: Build a Debian image
         uses: docker/build-push-action@v5
@@ -292,9 +292,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-alpine-cache
-          key: ${{ format('{0}-imagemagick-{1}-alpine-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles_version_short) }}
+          key: ${{ format('{0}-imagemagick-{1}-alpine-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles-version-short) }}
           restore-keys: |
-            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-${{ steps.general.outputs.dockerfiles_version_short }}
+            ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-${{ steps.general.outputs.dockerfiles-version-short }}
             ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-
       - name: Build an Alpine image
         uses: docker/build-push-action@v5
