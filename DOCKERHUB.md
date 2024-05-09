@@ -65,8 +65,8 @@ PS:\> docker run --rm -v "${PWD}:/data/" dstmodders/ktools ktech --version
 
 | Name                  | Value                  | Description           |
 | --------------------- | ---------------------- | --------------------- |
-| `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | [krane] path          |
-| `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | [ktech] path          |
+| `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | [ktools/krane] path   |
+| `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | [ktools/ktech] path   |
 | `IMAGEMAGICK_VERSION` | `7.1.1-32`             | [ImageMagick] version |
 | `KTOOLS_VERSION`      | `4.5.1`                | [ktools] version      |
 
@@ -114,8 +114,8 @@ Released under the [MIT License](https://opensource.org/licenses/MIT).
 [don't starve]: https://www.klei.com/games/dont-starve
 [fork releases]: https://github.com/dstmodders/ktools/releases
 [imagemagick]: https://imagemagick.org/index.php
-[krane]: https://github.com/nsimplex/ktools#krane
-[ktech]: https://github.com/nsimplex/ktools#ktech
-[ktools]: https://github.com/nsimplex/ktools
+[ktools/krane]: https://github.com/dstmodders/ktools?tab=readme-ov-file#krane
+[ktools/ktech]: https://github.com/dstmodders/ktools?tab=readme-ov-file#ktech
+[ktools]: https://github.com/dstmodders/ktools
 [official releases]: https://github.com/nsimplex/ktools/releases
 [tags]: https://hub.docker.com/r/dstmodders/ktools/tags
