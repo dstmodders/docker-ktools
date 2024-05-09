@@ -114,9 +114,9 @@ jobs:
         id: debian
         with:
           build-args: |
-            DS_KTOOLS_VERSION=${{ matrix.image.version }}
             IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
+            KTOOLS_VERSION=${{ matrix.image.version }}
           cache-from: type=local,src=/tmp/.buildx-debian-cache
           cache-to: type=local,dest=/tmp/.buildx-debian-cache-new,mode=max
           context: .
@@ -156,9 +156,9 @@ jobs:
         id: alpine
         with:
           build-args: |
-            DS_KTOOLS_VERSION=${{ matrix.image.version }}
             IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
+            KTOOLS_VERSION=${{ matrix.image.version }}
           cache-from: type=local,src=/tmp/.buildx-alpine-cache
           cache-to: type=local,dest=/tmp/.buildx-alpine-cache-new,mode=max
           context: .
@@ -262,9 +262,9 @@ jobs:
         id: debian
         with:
           build-args: |
-            DS_KTOOLS_VERSION=${{ matrix.image.version }}
             IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
+            KTOOLS_VERSION=${{ matrix.image.version }}
           cache-from: type=local,src=/tmp/.buildx-debian-cache
           cache-to: type=local,dest=/tmp/.buildx-debian-cache-new,mode=max
           context: .
@@ -301,9 +301,9 @@ jobs:
         id: alpine
         with:
           build-args: |
-            DS_KTOOLS_VERSION=${{ matrix.image.version }}
             IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
             IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
+            KTOOLS_VERSION=${{ matrix.image.version }}
           cache-from: type=local,src=/tmp/.buildx-alpine-cache
           cache-to: type=local,dest=/tmp/.buildx-alpine-cache-new,mode=max
           context: .

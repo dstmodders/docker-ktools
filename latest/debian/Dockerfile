@@ -5,8 +5,8 @@ FROM dstmodders/imagemagick:${IMAGEMAGICK_IMAGE_PREFIX}${IMAGEMAGICK_VERSION}-de
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ARG DS_KTOOLS_VERSION="4.5.1"
-ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
+ARG KTOOLS_VERSION="4.5.1"
+ENV KTOOLS_VERSION="${KTOOLS_VERSION}"
 
 ARG TARGETPLATFORM
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
@@ -24,9 +24,9 @@ RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
     pkg-config='1.8.1-1' \
     wget="$([[ "${TARGETPLATFORM}" == 'linux/386' ]] && echo '1.21.3-1+b1' || echo '1.21.3-1+b2')" \
   # ktools
-  && wget -q "https://github.com/dstmodders/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
-  && tar -xzf "./v${DS_KTOOLS_VERSION}.tar.gz" \
-  && cd "/tmp/ktools-${DS_KTOOLS_VERSION}/" \
+  && wget -q "https://github.com/dstmodders/ktools/archive/refs/tags/v${KTOOLS_VERSION}.tar.gz" \
+  && tar -xzf "./v${KTOOLS_VERSION}.tar.gz" \
+  && cd "/tmp/ktools-${KTOOLS_VERSION}/" \
   && ./configure \
   && make \
   && make install \

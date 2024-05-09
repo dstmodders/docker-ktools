@@ -79,16 +79,16 @@ PS:\> docker run --rm -v "${PWD}:/data/" dstmodders/ktools ktech --version
 | --------------------- | ---------------------- | --------------------- |
 | `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | [krane] path          |
 | `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | [ktech] path          |
-| `DS_KTOOLS_VERSION`   | `4.5.1`                | [ktools] version      |
 | `IMAGEMAGICK_VERSION` | `7.1.1-32`             | [ImageMagick] version |
+| `KTOOLS_VERSION`      | `4.5.1`                | [ktools] version      |
 
 ## Supported build arguments
 
 | Name                       | Image                    | Default                     | Description                          |
 | -------------------------- | ------------------------ | --------------------------- | ------------------------------------ |
-| `DS_KTOOLS_VERSION`        | `latest`<br />`official` | `4.5.1`<br />`4.4.0`        | Sets [ktools] version                |
 | `IMAGEMAGICK_IMAGE_PREFIX` | `latest`<br />`official` | -<br />`legacy-`            | Sets [ImageMagick] base image prefix |
 | `IMAGEMAGICK_VERSION`      | `latest`<br />`official` | `7.1.1-32`<br />`6.9.13-10` | Sets [ImageMagick] version           |
+| `KTOOLS_VERSION`           | `latest`<br />`official` | `4.5.1`<br />`4.4.0`        | Sets [ktools] version                |
 
 ## Supported architectures
 

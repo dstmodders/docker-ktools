@@ -5,8 +5,8 @@ FROM dstmodders/imagemagick:${IMAGEMAGICK_IMAGE_PREFIX}${IMAGEMAGICK_VERSION}-al
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
-ARG DS_KTOOLS_VERSION="4.5.1"
-ENV DS_KTOOLS_VERSION="${DS_KTOOLS_VERSION}"
+ARG KTOOLS_VERSION="4.5.1"
+ENV KTOOLS_VERSION="${KTOOLS_VERSION}"
 
 ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
@@ -22,9 +22,9 @@ RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
     make='4.4.1-r2' \
     readline-dev='8.2.1-r2' \
   # ktools
-  && wget -q "https://github.com/dstmodders/ktools/archive/refs/tags/v${DS_KTOOLS_VERSION}.tar.gz" \
-  && tar -xzf "./v${DS_KTOOLS_VERSION}.tar.gz" \
-  && cd "/tmp/ktools-${DS_KTOOLS_VERSION}/" \
+  && wget -q "https://github.com/dstmodders/ktools/archive/refs/tags/v${KTOOLS_VERSION}.tar.gz" \
+  && tar -xzf "./v${KTOOLS_VERSION}.tar.gz" \
+  && cd "/tmp/ktools-${KTOOLS_VERSION}/" \
   && ./configure \
   && make \
   && make install \
