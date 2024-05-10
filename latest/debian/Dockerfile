@@ -9,7 +9,7 @@ ARG KTOOLS_VERSION="4.5.1"
 ENV KTOOLS_VERSION="${KTOOLS_VERSION}"
 
 ARG TARGETPLATFORM
-ENV DS_KTOOLS_KRANE="/usr/local/bin/krane"
+ENV KTOOLS_KRANE="/usr/local/bin/krane"
 ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
 
 USER root

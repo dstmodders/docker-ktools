@@ -65,9 +65,9 @@ PS:\> docker run --rm -v "${PWD}:/data/" dstmodders/ktools ktech --version
 
 | Name                  | Value                  | Description           |
 | --------------------- | ---------------------- | --------------------- |
-| `DS_KTOOLS_KRANE`     | `/usr/local/bin/krane` | [ktools/krane] path   |
 | `DS_KTOOLS_KTECH`     | `/usr/local/bin/ktech` | [ktools/ktech] path   |
 | `IMAGEMAGICK_VERSION` | `7.1.1-32`             | [ImageMagick] version |
+| `KTOOLS_KRANE`        | `/usr/local/bin/krane` | [ktools/krane] path   |
 | `KTOOLS_VERSION`      | `4.5.1`                | [ktools] version      |
 
 ## Supported build arguments
