@@ -10,7 +10,7 @@ ENV KTOOLS_VERSION="${KTOOLS_VERSION}"
 
 ARG TARGETPLATFORM
 ENV KTOOLS_KRANE="/usr/local/bin/krane"
-ENV DS_KTOOLS_KTECH="/usr/local/bin/ktech"
+ENV KTOOLS_KTECH="/usr/local/bin/ktech"
 
 USER root
 WORKDIR /tmp/
