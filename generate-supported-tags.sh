@@ -8,13 +8,13 @@ LATEST_VERSIONS_KEYS=()
 OFFICIAL_VERSIONS_KEYS=()
 REPOSITORY='https://github.com/dstmodders/docker-ktools'
 
-mapfile -t LATEST_VERSIONS_KEYS < <(jq -r '.latest | keys[]' <<< "$JSON")
-# shellcheck disable=SC2207
-IFS=$'\n' LATEST_VERSIONS_KEYS=($(sort -rV <<< "${LATEST_VERSIONS_KEYS[*]}")); unset IFS
+extract_and_sort_keys() {
+  local key_path="$1"
+  jq -r "$key_path | keys[]" <<< "$JSON" | sort -rV
+}
 
-mapfile -t OFFICIAL_VERSIONS_KEYS < <(jq -r '.official | keys[]' <<< "$JSON")
-# shellcheck disable=SC2207
-IFS=$'\n' OFFICIAL_VERSIONS_KEYS=($(sort -rV <<< "${OFFICIAL_VERSIONS_KEYS[*]}")); unset IFS
+mapfile -t LATEST_VERSIONS_KEYS < <(extract_and_sort_keys '.latest')
+mapfile -t OFFICIAL_VERSIONS_KEYS < <(extract_and_sort_keys '.official')
 
 readonly BASE_DIR
 readonly COMMIT_ID
@@ -24,7 +24,7 @@ readonly LATEST_VERSIONS_KEYS
 readonly OFFICIAL_VERSIONS_KEYS
 readonly REPOSITORY
 
-function print_url() {
+print_url() {
   local tags="$1"
   local commit="$2"
   local directory="$3"
