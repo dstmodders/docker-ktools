@@ -65,7 +65,7 @@ PS:\> docker run --rm -v "${PWD}:/data/" dstmodders/ktools ktech --version
 
 | Name                  | Value                  | Description           |
 | --------------------- | ---------------------- | --------------------- |
-| `IMAGEMAGICK_VERSION` | `7.1.1-35`             | [ImageMagick] version |
+| `IMAGEMAGICK_VERSION` | `7.1.1-36`             | [ImageMagick] version |
 | `KTOOLS_KRANE`        | `/usr/local/bin/krane` | [ktools/krane] path   |
 | `KTOOLS_KTECH`        | `/usr/local/bin/ktech` | [ktools/ktech] path   |
 | `KTOOLS_VERSION`      | `4.5.1`                | [ktools] version      |
@@ -75,7 +75,7 @@ PS:\> docker run --rm -v "${PWD}:/data/" dstmodders/ktools ktech --version
 | Name                       | Image                    | Default                     | Description                          |
 | -------------------------- | ------------------------ | --------------------------- | ------------------------------------ |
 | `IMAGEMAGICK_IMAGE_PREFIX` | `latest`<br />`official` | -<br />`legacy-`            | Sets [ImageMagick] base image prefix |
-| `IMAGEMAGICK_VERSION`      | `latest`<br />`official` | `7.1.1-35`<br />`6.9.13-14` | Sets [ImageMagick] version           |
+| `IMAGEMAGICK_VERSION`      | `latest`<br />`official` | `7.1.1-36`<br />`6.9.13-14` | Sets [ImageMagick] version           |
 | `KTOOLS_VERSION`           | `latest`<br />`official` | `4.5.1`<br />`4.4.0`        | Sets [ktools] version                |
 
 ## Supported architectures
