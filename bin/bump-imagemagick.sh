@@ -47,8 +47,8 @@ print_bold_color() {
 }
 
 print_error() {
-  print_bold_red "error: $1"
-  echo ''
+  print_bold_color 1 "error: $1" 2
+  echo '' >&2
 }
 
 summary() {
