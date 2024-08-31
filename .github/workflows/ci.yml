@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@v4
         id: node
         with:
-          node-version: 20.16.0
+          node-version: 20.17.0
       - name: Send Slack notification
         uses: codedsolar/slack-action@v1
         if: ${{ github.event_name != 'pull_request' }}
