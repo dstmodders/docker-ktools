@@ -25,7 +25,7 @@ usage() {
 
 print_bold() {
   local value="$1"
-  local output="${3:-1}"
+  local output="${2:-1}"
 
   if [ "$DISABLE_COLORS" = '1' ] || ! [ -t 1 ]; then
     printf '%s' "$value" >&"$output"
