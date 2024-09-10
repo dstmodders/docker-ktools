@@ -37,10 +37,10 @@ cd "$BASE_DIR" || exit 1
 printf "## Supported tags and respective \`Dockerfile\` links\n\n"
 
 # reference:
-#   4.5.1-imagemagick-7.1.1-37-alpine, 4.5.1-alpine, 4.5.1, alpine, latest
-#   4.5.1-imagemagick-7.1.1-37-debian, 4.5.1-debian, debian
-#   4.5.0-imagemagick-7.1.1-37-alpine, 4.5.0-alpine, 4.5.0
-#   4.5.0-imagemagick-7.1.1-37-debian, 4.5.0-debian
+#   4.5.1-imagemagick-7.1.1-38-alpine, 4.5.1-alpine, 4.5.1, alpine, latest
+#   4.5.1-imagemagick-7.1.1-38-debian, 4.5.1-debian, debian
+#   4.5.0-imagemagick-7.1.1-38-alpine, 4.5.0-alpine, 4.5.0
+#   4.5.0-imagemagick-7.1.1-38-debian, 4.5.0-debian
 for key in "${LATEST_VERSIONS_KEYS[@]}"; do
   for dist in "${DISTS[@]}"; do
     imagemagick_version="$(jq -r ".latest | .[$key] | .imagemagick_version" <<< "$JSON")"
