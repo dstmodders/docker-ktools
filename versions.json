@@ -2,7 +2,7 @@
   "latest": [
     {
       "version": "4.4.1",
-      "imagemagick_version": "6.9.13-15",
+      "imagemagick_version": "6.9.13-16",
       "imagemagick_legacy": true
     },
     {
@@ -18,17 +18,17 @@
   "official": [
     {
       "version": "4.3.0",
-      "imagemagick_version": "6.9.13-15",
+      "imagemagick_version": "6.9.13-16",
       "imagemagick_legacy": true
     },
     {
       "version": "4.3.1",
-      "imagemagick_version": "6.9.13-15",
+      "imagemagick_version": "6.9.13-16",
       "imagemagick_legacy": true
     },
     {
       "version": "4.4.0",
-      "imagemagick_version": "6.9.13-15",
+      "imagemagick_version": "6.9.13-16",
       "imagemagick_legacy": true,
       "latest": true
     }
