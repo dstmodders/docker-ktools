@@ -35,18 +35,48 @@ readonly REPOSITORY
 
 # define flags
 FLAG_COMMIT=0
+FLAG_DRY_RUN=0
 
 usage() {
   cat <<EOF
-Generate supported tags.
+Bump supported tags.
 
 Usage:
   $PROGRAM [flags]
 
 Flags:
-  -c, --commit   commit changes
-  -h, --help     help for $PROGRAM
+  -c, --commit    commit changes
+  -d, --dry-run   only check and don't apply or commit any changes
+  -h, --help      help for $PROGRAM
 EOF
+}
+
+print_bold() {
+  local value="$1"
+  local output="${3:-1}"
+
+  if [ "$DISABLE_COLORS" = '1' ] || ! [ -t 1 ]; then
+    printf '%s' "$value" >&"$output"
+  else
+    printf "$(tput bold)%s$(tput sgr0)" "$value" >&"$output"
+  fi
+}
+
+print_bold_color() {
+  local color="$1"
+  local value="$2"
+  local output="${3:-1}"
+
+  if [ "$DISABLE_COLORS" = '1' ] || ! [ -t 1 ]; then
+    printf '%s' "$value" >&"$output"
+  else
+    printf "$(tput bold)$(tput setaf "$color")%s$(tput sgr0)" "$value" >&"$output"
+  fi
+}
+
+print_error() {
+  print_bold_color 1 "error: $1" 2
+  echo '' >&2
 }
 
 print_url() {
@@ -154,6 +184,9 @@ while [ $# -gt 0 ]; do
     -c|--commit)
       FLAG_COMMIT=1
       ;;
+    -d|--dry-run)
+      FLAG_DRY_RUN=1
+      ;;
     -h|--help)
       usage
       exit 0
@@ -170,30 +203,32 @@ done
 
 # define extra constants
 readonly FLAG_COMMIT
+readonly FLAG_DRY_RUN
 
 printf "%s\n\n" "$HEADING_FOR_TAGS"
 
-if [ "$FLAG_COMMIT" -eq 1 ]; then
+if [ "$FLAG_DRY_RUN" -eq 1 ]; then
+  print_latest_tags
+  print_official_tags
+  exit 0
+else
   latest_tags="$(print_latest_tags)"
   official_tags="$(print_official_tags)"
   echo "$latest_tags"
   echo "$official_tags"
+
   echo '---'
+  printf 'Replacing...'
+  replace "$HEADING_FOR_TAGS"$'\n'$'\n'"$latest_tags"$'\n'"$official_tags"$'\n'
+  printf ' Done\n'
+
   if [ "$FLAG_COMMIT" -eq 1 ]; then
-    replace "$HEADING_FOR_TAGS"$'\n'$'\n'"$latest_tags"$'\n'"$official_tags"$'\n'
     printf 'Committing...'
-    git add \
-      DOCKERHUB.md \
-      README.md
+    git add ./DOCKERHUB.md ./README.md
     if [ -n "$(git diff --cached --name-only)" ]; then
       printf '\n'
       echo '---'
       git commit -m "$COMMIT_MESSAGE"
-    else
-      printf ' Skipped\n'
     fi
   fi
-else
-  print_latest_tags
-  print_official_tags
 fi
