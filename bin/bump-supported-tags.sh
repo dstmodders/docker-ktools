@@ -53,7 +53,7 @@ EOF
 
 print_bold() {
   local value="$1"
-  local output="${3:-1}"
+  local output="${2:-1}"
 
   if [ "$DISABLE_COLORS" = '1' ] || ! [ -t 1 ]; then
     printf '%s' "$value" >&"$output"
@@ -201,7 +201,6 @@ while [ $# -gt 0 ]; do
   shift 1
 done
 
-# define extra constants
 readonly FLAG_COMMIT
 readonly FLAG_DRY_RUN
 

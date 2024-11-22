@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# define constants
 BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
 DOCKERHUB_START_LINE=16
 JSON="$(cat "$BASE_DIR/../versions.json")"
