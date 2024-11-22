@@ -60,7 +60,7 @@ summary() {
     "$dir/debian/Dockerfile"
     'DOCKERHUB.md'
     'README.md'
-    'bin/generate-supported-tags.sh'
+    'bin/bump-supported-tags.sh'
     'versions.json'
   )
 
@@ -88,7 +88,7 @@ replace() {
   sed -i "$DOCKERHUB_START_LINE,\$s/\`$old_version\`/\`$new_version\`/g" ./DOCKERHUB.md
   sed -i "$README_START_LINE,\$s/\`$old_version\`/\`$new_version\`/g" ./README.md
   sed -i "s/\"$old_version\"/\"$new_version\"/" ./versions.json
-  sed -i "/^# reference:/,/^[^#]/s/imagemagick-$old_version/imagemagick-$new_version/g" ./bin/generate-supported-tags.sh
+  sed -i "/^# reference:/,/^[^#]/s/imagemagick-$old_version/imagemagick-$new_version/g" ./bin/bump-supported-tags.sh
   sed -i "s/^ARG IMAGEMAGICK_VERSION=\"$old_version\"$/ARG IMAGEMAGICK_VERSION=\"$new_version\"/" "./$dir/alpine/Dockerfile"
   sed -i "s/^ARG IMAGEMAGICK_VERSION=\"$old_version\"$/ARG IMAGEMAGICK_VERSION=\"$new_version\"/" "./$dir/debian/Dockerfile"
   printf ' Done\n'
@@ -166,7 +166,7 @@ if [ -n "$name" ]; then
       "$dir/debian/Dockerfile" \
       DOCKERHUB.md \
       README.md \
-      bin/generate-supported-tags.sh \
+      bin/bump-supported-tags.sh \
       versions.json
     if [ -n "$(git diff --cached --name-only)" ]; then
       printf '\n'
