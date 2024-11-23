@@ -88,10 +88,10 @@ print_url() {
 }
 
 # reference:
-#   4.5.1-imagemagick-7.1.1-39-alpine, 4.5.1-alpine, 4.5.1, alpine, latest
-#   4.5.1-imagemagick-7.1.1-39-debian, 4.5.1-debian, debian
-#   4.5.0-imagemagick-7.1.1-39-alpine, 4.5.0-alpine, 4.5.0
-#   4.5.0-imagemagick-7.1.1-39-debian, 4.5.0-debian
+#   4.5.1-imagemagick-7.1.1-40-alpine, 4.5.1-alpine, 4.5.1, alpine, latest
+#   4.5.1-imagemagick-7.1.1-40-debian, 4.5.1-debian, debian
+#   4.5.0-imagemagick-7.1.1-40-alpine, 4.5.0-alpine, 4.5.0
+#   4.5.0-imagemagick-7.1.1-40-debian, 4.5.0-debian
 print_latest_tags() {
   for key in "${LATEST_VERSIONS_KEYS[@]}"; do
     for dist in "${DISTS[@]}"; do
