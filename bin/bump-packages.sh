@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # define constants
 BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
