@@ -13,6 +13,9 @@ readonly JSON
 readonly PROGRAM
 readonly README_START_LINE
 
+# define flags
+FLAG_COMMIT=0
+
 usage() {
   echo -e "Bump the latest or legacy ImageMagick version.
 
@@ -98,7 +101,6 @@ replace() {
 cd "$BASE_DIR/.." || exit 1
 
 name=''
-commit=0
 
 while [ $# -gt 0 ]; do
   key="$1"
@@ -107,7 +109,7 @@ while [ $# -gt 0 ]; do
       name="$key"
       ;;
     -c|--commit)
-      commit=1
+      FLAG_COMMIT=1
       ;;
     -h|--help)
       usage
@@ -123,6 +125,8 @@ while [ $# -gt 0 ]; do
   esac
   shift 1
 done
+
+readonly FLAG_COMMIT
 
 if [ -z "$name" ]; then
   echo 'Choose bump option:'
@@ -160,7 +164,7 @@ if [ -n "$name" ]; then
   echo '---'
   replace "$dir" "$old_version" "$new_version"
 
-  if [ "$commit" -eq 1 ]; then
+  if [ "$FLAG_COMMIT" -eq 1 ]; then
     printf 'Committing...'
     git add \
       "$dir/alpine/Dockerfile" \
