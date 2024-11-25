@@ -17,14 +17,16 @@ readonly README_START_LINE
 FLAG_COMMIT=0
 
 usage() {
-  echo -e "Bump the latest or legacy ImageMagick version.
+  cat <<EOF
+Bump the latest or legacy ImageMagick version.
 
-    Usage:
-      $PROGRAM [flags] [latest|legacy] [version]
+Usage:
+  $PROGRAM [flags] [latest|legacy] [version]
 
-    Flags:
-      -c, --commit   commit changes
-      -h, --help     help for $PROGRAM" | sed -E 's/^ {4}//'
+Flags:
+  -c, --commit   commit changes
+  -h, --help     help for $PROGRAM
+EOF
 }
 
 print_bold() {
