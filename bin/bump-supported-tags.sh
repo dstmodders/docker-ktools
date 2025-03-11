@@ -228,6 +228,8 @@ else
       printf '\n'
       echo '---'
       git commit -m "$COMMIT_MESSAGE"
+    else
+      printf ' Skipped\n'
     fi
   fi
 fi
