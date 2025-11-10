@@ -18,11 +18,11 @@ WORKDIR /tmp/
 RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
-    build-essential='12.9' \
-    ca-certificates='20230311' \
-    cmake='3.25.1-1' \
-    pkg-config='1.8.1-1' \
-    wget="$([[ "${TARGETPLATFORM}" == 'linux/386' ]] && echo '1.21.3-1+b1' || echo '1.21.3-1+b2')" \
+    build-essential='12.12' \
+    ca-certificates='20250419' \
+    cmake='3.31.6-2' \
+    pkg-config='1.8.1-4' \
+    wget='1.25.0-2' \
   # ktools
   && wget -q "https://github.com/dstmodders/ktools/archive/refs/tags/v${KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./v${KTOOLS_VERSION}.tar.gz" \
