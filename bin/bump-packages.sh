@@ -2,7 +2,7 @@
 
 # define constants
 BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
-DOCKER_ALPINE_IMAGE='alpine:3.19.1'
+DOCKER_ALPINE_IMAGE='alpine:3.22.2'
 DOCKER_DEBIAN_IMAGE='debian:bookworm-slim'
 EXCLUDED_ALPINE_PACKAGES=()
 EXCLUDED_DEBIAN_PACKAGES=('wget')
