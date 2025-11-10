@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Send Slack notification
         uses: codedsolar/slack-action@v1
         if: ${{ github.event_name != 'pull_request' }}
@@ -65,7 +65,7 @@ jobs:
           fi
           exit "$exit_code"
       - name: Update Docker Hub repository overview
-        uses: peter-evans/dockerhub-description@v4
+        uses: peter-evans/dockerhub-description@v5
         if: ${{ !env.ACT }}
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}

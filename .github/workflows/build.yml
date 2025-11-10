@@ -26,7 +26,7 @@ jobs:
       official: ${{ steps.set-matrix.outputs.official }}
     steps:
       - name: Check out
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set matrix
         id: set-matrix
         run: |
@@ -45,7 +45,7 @@ jobs:
         image: ${{ fromJSON(needs.prepare.outputs.official) }}
     steps:
       - name: Check out
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set general outputs
         id: general
         run: |
@@ -194,7 +194,7 @@ jobs:
         image: ${{ fromJSON(needs.prepare.outputs.latest) }}
     steps:
       - name: Check out
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set general outputs
         id: general
         run: |
