@@ -87,7 +87,7 @@ PS:\> docker run --rm -v "${PWD}:/data/" dstmodders/ktools ktech --version
 | Name                       | Image                    | Default                     | Description                          |
 | -------------------------- | ------------------------ | --------------------------- | ------------------------------------ |
 | `IMAGEMAGICK_IMAGE_PREFIX` | `latest`<br />`official` | -<br />`legacy-`            | Sets [ImageMagick] base image prefix |
-| `IMAGEMAGICK_VERSION`      | `latest`<br />`official` | `7.1.1-44`<br />`6.9.13-22` | Sets [ImageMagick] version           |
+| `IMAGEMAGICK_VERSION`      | `latest`<br />`official` | `7.1.1-44`<br />`6.9.13-23` | Sets [ImageMagick] version           |
 | `KTOOLS_VERSION`           | `latest`<br />`official` | `4.5.1`<br />`4.4.0`        | Sets [ktools] version                |
 
 ## Supported architectures
