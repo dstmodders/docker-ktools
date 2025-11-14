@@ -7,11 +7,11 @@
     },
     {
       "version": "4.5.0",
-      "imagemagick_version": "7.1.1-46"
+      "imagemagick_version": "7.1.1-47"
     },
     {
       "version": "4.5.1",
-      "imagemagick_version": "7.1.1-46",
+      "imagemagick_version": "7.1.1-47",
       "latest": true
     }
   ],
