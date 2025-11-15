@@ -125,10 +125,10 @@ print_latest_tags() {
 }
 
 # reference:
-#   official-4.4.0-imagemagick-6.9.13-26-alpine, official-4.4.0-alpine, official-4.4.0, official-alpine, official-latest, official
-#   official-4.4.0-imagemagick-6.9.13-26-debian, official-4.4.0-debian, official-debian
-#   official-4.3.1-imagemagick-6.9.13-26-alpine, official-4.3.1-alpine, official-4.3.1
-#   official-4.3.1-imagemagick-6.9.13-26-debian, official-4.3.1-debian
+#   official-4.4.0-imagemagick-6.9.13-27-alpine, official-4.4.0-alpine, official-4.4.0, official-alpine, official-latest, official
+#   official-4.4.0-imagemagick-6.9.13-27-debian, official-4.4.0-debian, official-debian
+#   official-4.3.1-imagemagick-6.9.13-27-alpine, official-4.3.1-alpine, official-4.3.1
+#   official-4.3.1-imagemagick-6.9.13-27-debian, official-4.3.1-debian
 print_official_tags() {
   for key in "${OFFICIAL_VERSIONS_KEYS[@]}"; do
     for dist in "${DISTS[@]}"; do
