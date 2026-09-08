@@ -6,9 +6,10 @@
     "format": "run-s format:sort-package-json format:prettier",
     "format:prettier": "prettier --write .",
     "format:sort-package-json": "sort-package-json",
-    "lint": "run-s lint:sort-package-json lint:prettier lint:hadolint",
+    "lint": "run-s lint:sort-package-json lint:prettier lint:hadolint lint:shellcheck",
     "lint:hadolint": "hadolint latest/alpine/Dockerfile latest/debian/Dockerfile official/alpine/Dockerfile official/debian/Dockerfile",
     "lint:prettier": "prettier --check .",
+    "lint:shellcheck": "shellcheck bin/*.sh",
     "lint:sort-package-json": "sort-package-json --check"
   },
   "devDependencies": {
@@ -16,6 +17,7 @@
     "npm-run-all2": "^9.0.3",
     "prettier": "^3.9.6",
     "prettier-plugin-sh": "^0.19.0",
+    "shellcheck": "^4.1.0",
     "sort-package-json": "^4.0.0"
   },
   "packageManager": "pnpm@11.17.0"
