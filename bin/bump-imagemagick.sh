@@ -17,7 +17,7 @@ readonly README_START_LINE
 FLAG_COMMIT=0
 
 usage() {
-  cat <<EOF
+  cat << EOF
 Bump the latest or legacy ImageMagick version.
 
 Usage:
@@ -107,13 +107,13 @@ name=''
 while [ $# -gt 0 ]; do
   key="$1"
   case "$key" in
-    latest|legacy)
+    latest | legacy)
       name="$key"
       ;;
-    -c|--commit)
+    -c | --commit)
       FLAG_COMMIT=1
       ;;
-    -h|--help)
+    -h | --help)
       usage
       exit 0
       ;;
@@ -135,8 +135,14 @@ if [ -z "$name" ]; then
   options=('latest' 'legacy')
   select opt in "${options[@]}"; do
     case "$opt" in
-      latest) name='latest'; break ;;
-      legacy) name='legacy'; break ;;
+      latest)
+        name='latest'
+        break
+        ;;
+      legacy)
+        name='legacy'
+        break
+        ;;
       *) print_error 'unrecognized option (choose number 1 or 2)' ;;
     esac
   done

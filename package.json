@@ -1,0 +1,22 @@
+{
+  "name": "docker-ktools",
+  "private": true,
+  "scripts": {
+    "deduplicate": "pnpm dedupe",
+    "format": "run-s format:sort-package-json format:prettier",
+    "format:prettier": "prettier --write .",
+    "format:sort-package-json": "sort-package-json",
+    "lint": "run-s lint:sort-package-json lint:prettier lint:hadolint",
+    "lint:hadolint": "hadolint latest/alpine/Dockerfile latest/debian/Dockerfile official/alpine/Dockerfile official/debian/Dockerfile",
+    "lint:prettier": "prettier --check .",
+    "lint:sort-package-json": "sort-package-json --check"
+  },
+  "devDependencies": {
+    "hadolint": "^0.4.2",
+    "npm-run-all2": "^9.0.3",
+    "prettier": "^3.9.6",
+    "prettier-plugin-sh": "^0.19.0",
+    "sort-package-json": "^4.0.0"
+  },
+  "packageManager": "pnpm@11.17.0"
+}

@@ -12,6 +12,7 @@ ARG TARGETPLATFORM
 ENV KTOOLS_KRANE="/usr/local/bin/krane"
 ENV KTOOLS_KTECH="/usr/local/bin/ktech"
 
+# hadolint ignore=DL3066
 USER root
 WORKDIR /tmp/
 # hadolint ignore=DL3003
@@ -53,5 +54,5 @@ RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
   && krane --version \
   && ktech --version
 
-USER ktools
+USER 1000:1000
 WORKDIR /data/
