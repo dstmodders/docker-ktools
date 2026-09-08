@@ -37,13 +37,13 @@ jobs:
           status: in-progress
       - name: Enable corepack
         run: corepack enable
-      - name: Install Prettier
-        run: yarn global add prettier
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
       - name: Lint using Prettier
-        run: prettier --check . || true
+        run: pnpm exec prettier --check . || true
       - name: Output Prettier results
         id: prettier
-        run: echo "issues=$(prettier --list-different . | wc -l)" >> "$GITHUB_OUTPUT"
+        run: echo "issues=$(pnpm exec prettier --list-different . | wc -l)" >> "$GITHUB_OUTPUT"
       - name: Lint using Hadolint (latest Alpine)
         uses: hadolint/hadolint-action@v3.1.0
         id: hadolint-latest-alpine
