@@ -34,6 +34,7 @@ jobs:
             Node.js: ${{ steps.node.outputs.node-version }}
             Hadolint issues: Checking...
             Prettier issues: Checking...
+            ShellCheck issues: Checking...
           status: in-progress
       - name: Enable corepack
         run: corepack enable
@@ -83,6 +84,13 @@ jobs:
             echo "official-debian-issues=$official_debian_issues"
             echo "issues=$((latest_alpine_issues + latest_debian_issues + official_alpine_issues + official_debian_issues))"
           } >> "$GITHUB_OUTPUT"
+      - name: Lint using ShellCheck
+        run: pnpm lint:shellcheck || true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Output ShellCheck results
+        id: shellcheck
+        run: echo "issues=$(pnpm exec shellcheck -f gcc bin/*.sh 2>&1 | wc -l)" >> "$GITHUB_OUTPUT"
       - name: Check results
         run: |
           hadolint_latest_alpine_issues="${{ steps.hadolint.outputs.latest-alpine-issues }}"
@@ -91,6 +99,7 @@ jobs:
           hadolint_official_debian_issues="${{ steps.hadolint.outputs.official-debian-issues }}"
           hadolint_issues="${{ steps.hadolint.outputs.issues }}"
           prettier_issues="${{ steps.prettier.outputs.issues }}"
+          shellcheck_issues="${{ steps.shellcheck.outputs.issues }}"
 
           echo "Hadolint issues (latest Alpine): $hadolint_latest_alpine_issues"
           echo "Hadolint issues (latest Debian): $hadolint_latest_debian_issues"
@@ -98,9 +107,10 @@ jobs:
           echo "Hadolint issues (official Debian): $hadolint_official_debian_issues"
           echo "Total Hadolint issues: $hadolint_issues"
           echo "Total Prettier issues: $prettier_issues"
+          echo "Total ShellCheck issues: $shellcheck_issues"
 
           exit_code=1
-          if [ "$prettier_issues" = '0' ] && [ "$hadolint_issues" = '0' ]; then
+          if [ "$prettier_issues" = '0' ] && [ "$hadolint_issues" = '0' ] && [ "$shellcheck_issues" = '0' ]; then
             exit_code=0
           fi
           exit "$exit_code"
@@ -114,5 +124,6 @@ jobs:
             Node.js: ${{ steps.node.outputs.node-version }}
             Hadolint issues: ${{ steps.hadolint.outputs.issues || 'Skipped' }}
             Prettier issues: ${{ steps.prettier.outputs.issues || 'Skipped' }}
+            ShellCheck issues: ${{ steps.shellcheck.outputs.issues || 'Skipped' }}
           status: ${{ job.status }}
           timestamp: ${{ steps.slack.outputs.slack-timestamp }}
