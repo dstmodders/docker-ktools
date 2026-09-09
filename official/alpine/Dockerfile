@@ -21,7 +21,7 @@ RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
     cmake='3.31.7-r1' \
     g++='14.2.0-r6' \
     make='4.4.1-r3' \
-    musl-dev='1.2.5-r10' \
+    musl-dev='1.2.5-r12' \
     patch='2.8-r0' \
     readline-dev='8.2.13-r1' \
   # ktools
