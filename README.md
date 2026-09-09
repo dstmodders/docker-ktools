@@ -99,7 +99,20 @@ PS:\> docker run --rm -v "${PWD}:/data/" dstmodders/ktools ktech --version
 
 ## Build
 
-To build images locally:
+To build images locally, you can use `bin/build.sh` script:
+
+```shell
+# to build all images
+$ ./bin/build.sh
+
+# to build only the latest images
+$ ./bin/build.sh latest
+
+# to build only the official images
+$ ./bin/build.sh official
+```
+
+To build images manually:
 
 ```shell
 $ docker build --tag='dstmodders/ktools:alpine' ./latest/alpine/
@@ -108,7 +121,7 @@ $ docker build --tag='dstmodders/ktools:official-alpine' ./official/alpine/
 $ docker build --tag='dstmodders/ktools:official-debian' ./official/debian/
 ```
 
-Respectively, to build multi-platform images using [buildx]:
+Respectively, to build multi-platform images manually using [buildx]:
 
 ```shell
 $ docker buildx build --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:alpine' ./latest/alpine/
