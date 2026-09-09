@@ -1,3 +1,7 @@
+**Note:** This repository uses a fork [dstmodders/ktools] instead of the
+original [nsimplex/ktools]. All tags prefixed with "official" point to [official
+releases]. See [fork releases] to learn more.
+
 ## Supported tags and respective `Dockerfile` links
 
 - [`4.5.1-imagemagick-7.1.2-1-alpine`, `4.5.1-alpine`, `4.5.1`, `alpine`, `latest`](https://github.com/dstmodders/docker-ktools/blob/bbf86a76e934a55e865becfbf4581e558ca87f74/latest/alpine/Dockerfile)
@@ -87,7 +91,20 @@ PS:\> docker run --rm -v "${PWD}:/data/" dstmodders/ktools ktech --version
 
 ## Build
 
-To build images locally:
+To build images locally, you can use `bin/build.sh` script:
+
+```shell
+# to build all images
+$ ./bin/build.sh
+
+# to build only the latest images
+$ ./bin/build.sh latest
+
+# to build only the official images
+$ ./bin/build.sh official
+```
+
+To build images manually:
 
 ```shell
 $ docker build --tag='dstmodders/ktools:alpine' ./latest/alpine/
@@ -96,7 +113,7 @@ $ docker build --tag='dstmodders/ktools:official-alpine' ./official/alpine/
 $ docker build --tag='dstmodders/ktools:official-debian' ./official/debian/
 ```
 
-Respectively, to build multi-platform images using [buildx]:
+Respectively, to build multi-platform images manually using [buildx]:
 
 ```shell
 $ docker buildx build --platform='linux/amd64,linux/386' --tag='dstmodders/ktools:alpine' ./latest/alpine/
@@ -112,10 +129,12 @@ Released under the [MIT License](https://opensource.org/licenses/MIT).
 [buildx]: https://github.com/docker/buildx
 [docker]: https://www.docker.com/
 [don't starve]: https://www.klei.com/games/dont-starve
+[dstmodders/ktools]: https://github.com/dstmodders/ktools
 [fork releases]: https://github.com/dstmodders/ktools/releases
 [imagemagick]: https://imagemagick.org/index.php
 [ktools/krane]: https://github.com/dstmodders/ktools?tab=readme-ov-file#krane
 [ktools/ktech]: https://github.com/dstmodders/ktools?tab=readme-ov-file#ktech
 [ktools]: https://github.com/dstmodders/ktools
+[nsimplex/ktools]: https://github.com/nsimplex/ktools
 [official releases]: https://github.com/nsimplex/ktools/releases
 [tags]: https://hub.docker.com/r/dstmodders/ktools/tags
