@@ -5,6 +5,7 @@ FROM dstmodders/imagemagick:${IMAGEMAGICK_IMAGE_PREFIX}${IMAGEMAGICK_VERSION}-de
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+ARG BUILD_CPUS
 ARG KTOOLS_VERSION="4.4.0"
 ENV KTOOLS_VERSION="${KTOOLS_VERSION}"
 
@@ -32,7 +33,10 @@ RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
   && cd "/tmp/ktools-${KTOOLS_VERSION}/" \
   && patch -p1 < /tmp/47f38381671e03455eab193a1d3a88e11666af99.patch \
   && ./configure \
-  && make \
+  && : "${BUILD_CPUS:=$(($(nproc) > 1 ? $(nproc) / 2 : 1))}" \
+  && echo "BUILD_CPUS=${BUILD_CPUS}" \
+  && echo "make -j${BUILD_CPUS}" \
+  && make -j"${BUILD_CPUS}" \
   && make install \
   # clean
   && apt-get remove -y \
