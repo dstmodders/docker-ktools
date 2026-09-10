@@ -51,7 +51,7 @@ get_packages_from_dockerfile() {
     -e '/apt-get install -y --no-install-recommends/,/&&/p' \
     "${dockerfile}" \
     | sed -E ':a;N;$!ba;s/\\\n/ /g' \
-    | grep -oE '([a-zA-Z0-9+]+(-[a-zA-Z0-9+]+)*=[^[:space:]]+)' \
+    | grep -oE '([a-zA-Z0-9+.]+(-[a-zA-Z0-9+.]+)*=[^[:space:]]+)' \
     | sed "s/'//g" \
     | sort \
     | uniq
