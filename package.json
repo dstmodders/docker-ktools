@@ -9,7 +9,7 @@
     "lint": "run-s lint:sort-package-json lint:prettier lint:hadolint lint:shellcheck",
     "lint:hadolint": "hadolint latest/alpine/Dockerfile latest/debian/Dockerfile official/alpine/Dockerfile official/debian/Dockerfile",
     "lint:prettier": "prettier --check .",
-    "lint:shellcheck": "shellcheck bin/*.sh",
+    "lint:shellcheck": "shellcheck bin/*.sh tests/tests.sh",
     "lint:sort-package-json": "sort-package-json --check"
   },
   "devDependencies": {
