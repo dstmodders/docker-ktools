@@ -13,6 +13,28 @@ env:
   SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      docker: ${{ steps.filter.outputs.docker }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+      - name: Check for docker-related changes
+        uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            docker:
+              - 'latest/**'
+              - 'official/**'
+              - 'tests/**'
+              - '.github/workflows/ci.yml'
+              - 'versions.json'
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -125,5 +147,97 @@ jobs:
             Hadolint issues: ${{ steps.hadolint.outputs.issues || 'Skipped' }}
             Prettier issues: ${{ steps.prettier.outputs.issues || 'Skipped' }}
             ShellCheck issues: ${{ steps.shellcheck.outputs.issues || 'Skipped' }}
+          status: ${{ job.status }}
+          timestamp: ${{ steps.slack.outputs.slack-timestamp }}
+
+  test:
+    needs: changes
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.changes.outputs.docker == 'true' }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Send Slack notification
+        uses: codedsolar/slack-action@v1
+        if: ${{ github.event_name != 'pull_request' }}
+        id: slack
+        with:
+          fields: |
+            {STATUS}
+            {REF}
+            Testing: Checking...
+          status: in-progress
+      - name: Build a latest image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./latest/alpine/Dockerfile
+          load: true
+          platforms: linux/amd64
+          pull: true
+          push: false
+          tags: ktools-test-latest
+      - name: Build an official image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./official/alpine/Dockerfile
+          load: true
+          platforms: linux/amd64
+          pull: true
+          push: false
+          tags: ktools-test-official
+      - name: Run tests
+        run: |
+          # latest
+          echo 'Testing latest image...'
+          echo '---'
+          docker run --name test-latest \
+            --user root \
+            -v './tests:/tests:rw' \
+            -w /tests/ \
+            ktools-test-latest \
+            /bin/sh -c './tests.sh'
+          mkdir -p ./tests-latest-results/
+          docker cp test-latest:/tests/result/. ./tests-latest-results/
+          docker rm test-latest
+          echo '---'
+
+          # official
+          echo 'Testing official image...'
+          echo '---'
+          docker run --name test-official \
+            --user root \
+            -v './tests:/tests:rw' \
+            -w /tests/ \
+            ktools-test-official \
+            /bin/sh -c './tests.sh'
+          mkdir -p ./tests-official-results/
+          docker cp test-official:/tests/result/. ./tests-official-results/
+          docker rm test-official
+      - name: Upload latest test results
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: tests-latest-results-${{ github.run_id }}
+          path: ./tests-latest-results
+          retention-days: 7
+      - name: Upload official test results
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: tests-official-results-${{ github.run_id }}
+          path: ./tests-official-results
+          retention-days: 7
+      - name: Update Slack notification
+        uses: codedsolar/slack-action@v1
+        if: ${{ github.event_name != 'pull_request' && always() }}
+        with:
+          fields: |
+            {STATUS}
+            {REF}
+            Testing: Completed
           status: ${{ job.status }}
           timestamp: ${{ steps.slack.outputs.slack-timestamp }}
