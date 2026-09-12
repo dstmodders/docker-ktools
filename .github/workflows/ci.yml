@@ -24,6 +24,26 @@ env:
   SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+      - name: Set matrix
+        id: set-matrix
+        run: |
+          json="$(cat ./versions.json)"
+          matrix="$(jq -cM '
+            (
+              [ .latest[] | { version: .version, family: "latest", imagemagick_version: .imagemagick_version, imagemagick_legacy: (.imagemagick_legacy // false), latest: (.latest // false) } ]
+              +
+              [ .official[] | { version: .version, family: "official", imagemagick_version: .imagemagick_version, imagemagick_legacy: (.imagemagick_legacy // false), latest: (.latest // false) } ]
+            )
+          ' <<< "$json")"
+          echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
+
   changes:
     runs-on: ubuntu-latest
     permissions:
@@ -161,15 +181,104 @@ jobs:
           status: ${{ job.status }}
           timestamp: ${{ steps.slack.outputs.slack-timestamp }}
 
-  test:
-    needs: changes
+  build:
+    needs: [changes, prepare]
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' || needs.changes.outputs.docker == 'true' }}
+    strategy:
+      matrix:
+        image: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
       - name: Check out
         uses: actions/checkout@v5
+      - name: Send Slack notification
+        uses: codedsolar/slack-action@v1
+        if: ${{ github.event_name != 'pull_request' }}
+        id: slack
+        with:
+          fields: |
+            {STATUS}
+            {REF}
+            ImageMagick version: ${{ matrix.image.imagemagick_version }}
+            ktools version: ${{ matrix.image.version }}
+          status: in-progress
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Build a Debian image
+        uses: docker/build-push-action@v6
+        with:
+          build-args: |
+            IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
+            IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
+            KTOOLS_VERSION=${{ matrix.image.version }}
+          context: .
+          file: ./${{ matrix.image.family }}/debian/Dockerfile
+          labels: maintainer=victor@popkov.me
+          load: true
+          platforms: linux/amd64
+          pull: true
+          push: false
+          tags: |
+            ${{ matrix.image.family }}-${{ matrix.image.version }}-debian
+      - name: Build an Alpine image
+        uses: docker/build-push-action@v6
+        with:
+          build-args: |
+            IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
+            IMAGEMAGICK_VERSION=${{ matrix.image.imagemagick_version }}
+            KTOOLS_VERSION=${{ matrix.image.version }}
+          context: .
+          file: ./${{ matrix.image.family }}/alpine/Dockerfile
+          labels: maintainer=victor@popkov.me
+          load: true
+          platforms: linux/amd64
+          pull: true
+          push: false
+          tags: |
+            ${{ matrix.image.family }}-${{ matrix.image.version }}-alpine
+      - name: Tag Alpine image
+        if: ${{ matrix.image.latest }}
+        run: docker tag ${{ matrix.image.family }}-${{ matrix.image.version }}-alpine ${{ matrix.image.family }}
+      - name: Save Alpine image
+        if: ${{ matrix.image.latest }}
+        run: docker save -o ./ci-${{ matrix.image.family }}-alpine.tar ${{ matrix.image.family }}
+      - name: Upload Alpine image
+        if: ${{ matrix.image.latest }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-${{ matrix.image.family }}-alpine-${{ github.run_id }}
+          path: ci-${{ matrix.image.family }}-alpine.tar
+          retention-days: 1
+      - name: Update Slack notification
+        uses: codedsolar/slack-action@v1
+        if: ${{ github.event_name != 'pull_request' && always() }}
+        with:
+          fields: |
+            {STATUS}
+            {REF}
+            ImageMagick version: ${{ matrix.image.imagemagick_version }}
+            ktools version: ${{ matrix.image.version }}
+          status: ${{ job.status }}
+          timestamp: ${{ steps.slack.outputs.slack-timestamp }}
+
+  test:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+      - name: Download latest image
+        uses: actions/download-artifact@v4
+        with:
+          name: ci-latest-alpine-${{ github.run_id }}
+      - name: Download official image
+        uses: actions/download-artifact@v4
+        with:
+          name: ci-official-alpine-${{ github.run_id }}
+      - name: Load latest image
+        run: docker load -i ci-latest-alpine.tar
+      - name: Load official image
+        run: docker load -i ci-official-alpine.tar
       - name: Send Slack notification
         uses: codedsolar/slack-action@v1
         if: ${{ github.event_name != 'pull_request' }}
@@ -180,26 +289,6 @@ jobs:
             {REF}
             Testing: Checking...
           status: in-progress
-      - name: Build a latest image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./latest/alpine/Dockerfile
-          load: true
-          platforms: linux/amd64
-          pull: true
-          push: false
-          tags: ktools-test-latest
-      - name: Build an official image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./official/alpine/Dockerfile
-          load: true
-          platforms: linux/amd64
-          pull: true
-          push: false
-          tags: ktools-test-official
       - name: Run tests
         run: |
           # latest
@@ -209,7 +298,7 @@ jobs:
             --user root \
             -v './tests:/tests:rw' \
             -w /tests/ \
-            ktools-test-latest \
+            latest \
             /bin/sh -c './tests.sh'
           mkdir -p ./tests-latest-results/
           docker cp test-latest:/tests/result/. ./tests-latest-results/
@@ -223,7 +312,7 @@ jobs:
             --user root \
             -v './tests:/tests:rw' \
             -w /tests/ \
-            ktools-test-official \
+            official \
             /bin/sh -c './tests.sh'
           mkdir -p ./tests-official-results/
           docker cp test-official:/tests/result/. ./tests-official-results/
