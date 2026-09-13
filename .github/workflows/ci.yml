@@ -30,7 +30,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Check out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Set matrix
         id: set-matrix
         run: |
@@ -53,7 +53,7 @@ jobs:
       docker: ${{ steps.filter.outputs.docker }}
     steps:
       - name: Check out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Check for docker-related changes
         uses: dorny/paths-filter@v4
         id: filter
@@ -70,9 +70,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         id: node
         with:
           node-version: 24.11.0
@@ -99,25 +99,25 @@ jobs:
         id: prettier
         run: echo "issues=$(pnpm exec prettier --list-different . | wc -l)" >> "$GITHUB_OUTPUT"
       - name: Lint using Hadolint (latest Alpine)
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.5.0
         id: hadolint-latest-alpine
         with:
           dockerfile: ./latest/alpine/Dockerfile
           no-fail: true
       - name: Lint using Hadolint (latest Debian)
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.5.0
         id: hadolint-latest-debian
         with:
           dockerfile: ./latest/debian/Dockerfile
           no-fail: true
       - name: Lint using Hadolint (official Alpine)
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.5.0
         id: hadolint-official-alpine
         with:
           dockerfile: ./official/alpine/Dockerfile
           no-fail: true
       - name: Lint using Hadolint (official Debian)
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.5.0
         id: hadolint-official-debian
         with:
           dockerfile: ./official/debian/Dockerfile
@@ -190,7 +190,7 @@ jobs:
         image: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
       - name: Check out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Send Slack notification
         uses: codedsolar/slack-action@v1
         if: ${{ github.event_name != 'pull_request' }}
@@ -203,9 +203,9 @@ jobs:
             ktools version: ${{ matrix.image.version }}
           status: in-progress
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       - name: Build a Debian image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           build-args: |
             IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
@@ -221,7 +221,7 @@ jobs:
           tags: |
             ${{ matrix.image.family }}-${{ matrix.image.version }}-debian
       - name: Build an Alpine image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           build-args: |
             IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
@@ -244,7 +244,7 @@ jobs:
         run: docker save -o ./ci-${{ matrix.image.family }}-alpine.tar ${{ matrix.image.family }}
       - name: Upload Alpine image
         if: ${{ matrix.image.latest }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ci-${{ matrix.image.family }}-alpine-${{ github.run_id }}
           path: ci-${{ matrix.image.family }}-alpine.tar
@@ -266,13 +266,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Download latest image
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ci-latest-alpine-${{ github.run_id }}
       - name: Download official image
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ci-official-alpine-${{ github.run_id }}
       - name: Load latest image
@@ -318,14 +318,14 @@ jobs:
           docker cp test-official:/tests/result/. ./tests-official-results/
           docker rm test-official
       - name: Upload latest test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ always() }}
         with:
           name: tests-latest-results-${{ github.run_id }}
           path: ./tests-latest-results
           retention-days: 7
       - name: Upload official test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: ${{ always() }}
         with:
           name: tests-official-results-${{ github.run_id }}
