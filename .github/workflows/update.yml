@@ -20,9 +20,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Send Slack notification
-        uses: codedsolar/slack-action@v1
+        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
         if: ${{ github.event_name != 'pull_request' }}
         id: slack
         with:
@@ -65,7 +65,7 @@ jobs:
           fi
           exit "$exit_code"
       - name: Update Docker Hub repository overview
-        uses: peter-evans/dockerhub-description@v5
+        uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
         if: ${{ !env.ACT }}
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -74,7 +74,7 @@ jobs:
           short-description: ${{ steps.github.outputs.description }}
           readme-filepath: ./DOCKERHUB.md
       - name: Update Slack notification
-        uses: codedsolar/slack-action@v1
+        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
         if: ${{ github.event_name != 'pull_request' && always() }}
         with:
           fields: |

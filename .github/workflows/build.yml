@@ -26,7 +26,7 @@ jobs:
       official: ${{ steps.set-matrix.outputs.official }}
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set matrix
         id: set-matrix
         run: |
@@ -45,7 +45,7 @@ jobs:
         image: ${{ fromJSON(needs.prepare.outputs.official) }}
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set general outputs
         id: general
         run: |
@@ -60,7 +60,7 @@ jobs:
             echo "dockerfiles-version-short=$dockerfiles_version_short"
           } >> "$GITHUB_OUTPUT"
       - name: Send Slack notification
-        uses: codedsolar/slack-action@v1
+        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
         if: ${{ github.event_name != 'pull_request' }}
         id: slack
         with:
@@ -71,24 +71,24 @@ jobs:
             ktools version: ${{ matrix.image.version }}
           status: in-progress
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        uses: docker/setup-qemu-action@1f40c72289eff860ee54a304f1438e3cff362e0a # v4.3.0
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
       - name: Login to Docker Hub
-        uses: docker/login-action@v4
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         if: ${{ github.event_name != 'pull_request' }}
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Login to GHCR
-        uses: docker/login-action@v4
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         if: ${{ github.event_name != 'pull_request' }}
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
       - name: Prepare Docker meta for a Debian image
-        uses: docker/metadata-action@v6
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         id: debian-meta
         with:
           flavor: prefix=official-,onlatest=true
@@ -102,7 +102,7 @@ jobs:
             type=raw,value=${{ matrix.image.version }}
             ${{ matrix.image.latest && 'type=raw,value=debian' || '' }}
       - name: Cache Docker layers (Debian)
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: /tmp/.buildx-debian-cache
           key: ${{ format('{0}-imagemagick-{1}-debian-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles-version-short) }}
@@ -110,7 +110,7 @@ jobs:
             ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-${{ steps.general.outputs.dockerfiles-version-short }}
             ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-
       - name: Build a Debian image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         id: debian
         with:
           build-args: |
@@ -127,7 +127,7 @@ jobs:
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.debian-meta.outputs.tags }}
       - name: Prepare Docker meta for an Alpine image
-        uses: docker/metadata-action@v6
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         id: alpine-meta
         with:
           images: |
@@ -144,7 +144,7 @@ jobs:
             ${{ matrix.image.latest && 'type=raw,value=alpine' || '' }}
             ${{ matrix.image.latest && 'type=raw,prefix=,value=official' || '' }}
       - name: Cache Docker layers (Alpine)
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: /tmp/.buildx-alpine-cache
           key: ${{ format('{0}-imagemagick-{1}-alpine-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles-version-short) }}
@@ -152,7 +152,7 @@ jobs:
             ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-${{ steps.general.outputs.dockerfiles-version-short }}
             ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-
       - name: Build an Alpine image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         id: alpine
         with:
           build-args: |
@@ -174,7 +174,7 @@ jobs:
           mv /tmp/.buildx-debian-cache-new /tmp/.buildx-debian-cache
           mv /tmp/.buildx-alpine-cache-new /tmp/.buildx-alpine-cache
       - name: Update Slack notification
-        uses: codedsolar/slack-action@v1
+        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
         if: ${{ github.event_name != 'pull_request' && always() }}
         with:
           fields: |
@@ -194,7 +194,7 @@ jobs:
         image: ${{ fromJSON(needs.prepare.outputs.latest) }}
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set general outputs
         id: general
         run: |
@@ -209,7 +209,7 @@ jobs:
             echo "dockerfiles-version-short=$dockerfiles_version_short"
           } >> "$GITHUB_OUTPUT"
       - name: Send Slack notification
-        uses: codedsolar/slack-action@v1
+        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
         if: ${{ github.event_name != 'pull_request' }}
         id: slack
         with:
@@ -220,24 +220,24 @@ jobs:
             ktools version: ${{ matrix.image.version }}
           status: in-progress
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+        uses: docker/setup-qemu-action@1f40c72289eff860ee54a304f1438e3cff362e0a # v4.3.0
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
       - name: Login to Docker Hub
-        uses: docker/login-action@v4
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         if: ${{ github.event_name != 'pull_request' }}
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Login to GHCR
-        uses: docker/login-action@v4
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         if: ${{ github.event_name != 'pull_request' }}
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
       - name: Prepare Docker meta for a Debian image
-        uses: docker/metadata-action@v6
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         id: debian-meta
         with:
           images: |
@@ -250,7 +250,7 @@ jobs:
             type=raw,value=${{ matrix.image.version }}
             ${{ matrix.image.latest && 'type=raw,value=debian' || '' }}
       - name: Cache Docker layers (Debian)
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: /tmp/.buildx-debian-cache
           key: ${{ format('{0}-imagemagick-{1}-debian-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles-version-short) }}
@@ -258,7 +258,7 @@ jobs:
             ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-${{ steps.general.outputs.dockerfiles-version-short }}
             ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-debian-
       - name: Build a Debian image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         id: debian
         with:
           build-args: |
@@ -275,7 +275,7 @@ jobs:
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.debian-meta.outputs.tags }}
       - name: Prepare Docker meta for an Alpine image
-        uses: docker/metadata-action@v6
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         id: alpine-meta
         with:
           images: |
@@ -289,7 +289,7 @@ jobs:
             type=raw,value=${{ matrix.image.version }}
             ${{ matrix.image.latest && 'type=raw,value=alpine' || '' }}
       - name: Cache Docker layers (Alpine)
-        uses: actions/cache@v6
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: /tmp/.buildx-alpine-cache
           key: ${{ format('{0}-imagemagick-{1}-alpine-{2}', matrix.image.version, matrix.image.imagemagick_version, steps.general.outputs.dockerfiles-version-short) }}
@@ -297,7 +297,7 @@ jobs:
             ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-${{ steps.general.outputs.dockerfiles-version-short }}
             ${{ matrix.image.version }}-imagemagick-${{ matrix.image.imagemagick_version }}-alpine-
       - name: Build an Alpine image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         id: alpine
         with:
           build-args: |
@@ -319,7 +319,7 @@ jobs:
           mv /tmp/.buildx-debian-cache-new /tmp/.buildx-debian-cache
           mv /tmp/.buildx-alpine-cache-new /tmp/.buildx-alpine-cache
       - name: Update Slack notification
-        uses: codedsolar/slack-action@v1
+        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
         if: ${{ github.event_name != 'pull_request' && always() }}
         with:
           fields: |

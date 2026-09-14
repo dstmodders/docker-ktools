@@ -30,7 +30,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set matrix
         id: set-matrix
         run: |
@@ -53,9 +53,9 @@ jobs:
       docker: ${{ steps.filter.outputs.docker }}
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check for docker-related changes
-        uses: dorny/paths-filter@v4
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: filter
         with:
           filters: |
@@ -70,14 +70,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         id: node
         with:
           node-version: 24.11.0
       - name: Send Slack notification
-        uses: codedsolar/slack-action@v1
+        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
         if: ${{ github.event_name != 'pull_request' }}
         id: slack
         with:
@@ -99,25 +99,25 @@ jobs:
         id: prettier
         run: echo "issues=$(pnpm exec prettier --list-different . | wc -l)" >> "$GITHUB_OUTPUT"
       - name: Lint using Hadolint (latest Alpine)
-        uses: hadolint/hadolint-action@v3.5.0
+        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
         id: hadolint-latest-alpine
         with:
           dockerfile: ./latest/alpine/Dockerfile
           no-fail: true
       - name: Lint using Hadolint (latest Debian)
-        uses: hadolint/hadolint-action@v3.5.0
+        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
         id: hadolint-latest-debian
         with:
           dockerfile: ./latest/debian/Dockerfile
           no-fail: true
       - name: Lint using Hadolint (official Alpine)
-        uses: hadolint/hadolint-action@v3.5.0
+        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
         id: hadolint-official-alpine
         with:
           dockerfile: ./official/alpine/Dockerfile
           no-fail: true
       - name: Lint using Hadolint (official Debian)
-        uses: hadolint/hadolint-action@v3.5.0
+        uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
         id: hadolint-official-debian
         with:
           dockerfile: ./official/debian/Dockerfile
@@ -168,7 +168,7 @@ jobs:
           fi
           exit "$exit_code"
       - name: Update Slack notification
-        uses: codedsolar/slack-action@v1
+        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
         if: ${{ github.event_name != 'pull_request' && always() }}
         with:
           fields: |
@@ -190,9 +190,9 @@ jobs:
         image: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Send Slack notification
-        uses: codedsolar/slack-action@v1
+        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
         if: ${{ github.event_name != 'pull_request' }}
         id: slack
         with:
@@ -203,9 +203,9 @@ jobs:
             ktools version: ${{ matrix.image.version }}
           status: in-progress
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
       - name: Build a Debian image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           build-args: |
             IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
@@ -221,7 +221,7 @@ jobs:
           tags: |
             ${{ matrix.image.family }}-${{ matrix.image.version }}-debian
       - name: Build an Alpine image
-        uses: docker/build-push-action@v7
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           build-args: |
             IMAGEMAGICK_IMAGE_PREFIX=${{ matrix.image.imagemagick_legacy && 'legacy-' || '' }}
@@ -244,13 +244,13 @@ jobs:
         run: docker save -o ./ci-${{ matrix.image.family }}-alpine.tar ${{ matrix.image.family }}
       - name: Upload Alpine image
         if: ${{ matrix.image.latest }}
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ci-${{ matrix.image.family }}-alpine-${{ github.run_id }}
           path: ci-${{ matrix.image.family }}-alpine.tar
           retention-days: 1
       - name: Update Slack notification
-        uses: codedsolar/slack-action@v1
+        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
         if: ${{ github.event_name != 'pull_request' && always() }}
         with:
           fields: |
@@ -266,13 +266,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Download latest image
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ci-latest-alpine-${{ github.run_id }}
       - name: Download official image
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ci-official-alpine-${{ github.run_id }}
       - name: Load latest image
@@ -280,7 +280,7 @@ jobs:
       - name: Load official image
         run: docker load -i ci-official-alpine.tar
       - name: Send Slack notification
-        uses: codedsolar/slack-action@v1
+        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
         if: ${{ github.event_name != 'pull_request' }}
         id: slack
         with:
@@ -318,21 +318,21 @@ jobs:
           docker cp test-official:/tests/result/. ./tests-official-results/
           docker rm test-official
       - name: Upload latest test results
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: ${{ always() }}
         with:
           name: tests-latest-results-${{ github.run_id }}
           path: ./tests-latest-results
           retention-days: 7
       - name: Upload official test results
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: ${{ always() }}
         with:
           name: tests-official-results-${{ github.run_id }}
           path: ./tests-official-results
           retention-days: 7
       - name: Update Slack notification
-        uses: codedsolar/slack-action@v1
+        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
         if: ${{ github.event_name != 'pull_request' && always() }}
         with:
           fields: |
