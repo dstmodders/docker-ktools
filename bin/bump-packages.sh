@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Bump packages in Dockerfiles.
+# Bump packages in Dockerfiles using the actual base images of the Dockerfiles.
 #
 # Usage:
 #   bump-packages.sh [flags]
@@ -23,14 +23,10 @@ set -euo pipefail
 
 # define constants
 BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
-DOCKER_ALPINE_IMAGE='alpine:3.22.2'
-DOCKER_DEBIAN_IMAGE='debian:trixie-slim'
 EXCLUDED_ALPINE_PACKAGES=()
 EXCLUDED_DEBIAN_PACKAGES=('wget')
 
 readonly BASE_DIR
-readonly DOCKER_ALPINE_IMAGE
-readonly DOCKER_DEBIAN_IMAGE
 readonly EXCLUDED_ALPINE_PACKAGES
 readonly EXCLUDED_DEBIAN_PACKAGES
 
@@ -59,15 +55,33 @@ get_packages_from_dockerfile() {
     | uniq
 }
 
-get_latest_apk_package_version() {
-  local name="$1"
-
-  local escaped_name
-  # shellcheck disable=SC2001
-  escaped_name="$(printf '%s\n' "${name}" | sed "s/[.[\*^$(){}+?|]/\\\\&/g")"
-
+get_base_image() {
+  local from
+  local prefix
   local version
-  version="$(docker run --rm -u root "${DOCKER_ALPINE_IMAGE}" /bin/sh -c "
+
+  local dockerfile="$1"
+
+  prefix="$(sed -n 's/^ARG IMAGEMAGICK_IMAGE_PREFIX="\(.*\)"$/\1/p' "${dockerfile}")"
+  version="$(sed -n 's/^ARG IMAGEMAGICK_VERSION="\(.*\)"$/\1/p' "${dockerfile}")"
+  from="$(grep '^FROM' "${dockerfile}" | head -1 | awk '{print $2}')"
+  from="${from//\$\{IMAGEMAGICK_IMAGE_PREFIX\}/${prefix}}"
+  from="${from//\$\{IMAGEMAGICK_VERSION\}/${version}}"
+
+  printf '%s\n' "${from}"
+}
+
+get_latest_apk_package_version() {
+  local base_image
+  local escaped_name
+  local version
+
+  local name="$1"
+  local dockerfile="$2"
+
+  base_image="$(get_base_image "${dockerfile}")"
+  escaped_name="$(printf '%s\n' "${name}" | sed "s/[.[\*^$(){}+?|]/\\\\&/g")"
+  version="$(docker run --rm -u root "${base_image}" /bin/sh -c "
     apk update &>/dev/null \
     && apk info '${name}' \
     | grep '^${name}.*description' \
@@ -83,10 +97,14 @@ get_latest_apk_package_version() {
 }
 
 get_latest_apt_package_version() {
-  local package_name="$1"
-
+  local base_image
   local version
-  version="$(docker run --rm -u root "${DOCKER_DEBIAN_IMAGE}" /bin/bash -c "
+
+  local package_name="$1"
+  local dockerfile="$2"
+
+  base_image="$(get_base_image "${dockerfile}")"
+  version="$(docker run --rm -u root "${base_image}" /bin/bash -c "
     apt-get update &>/dev/null \
     && apt-cache show '${package_name}' \
     | grep '^Version:' \
@@ -214,7 +232,7 @@ update_alpine_dockerfile() {
     current_version="$(printf '%s\n' "${line}" | cut -d '=' -f 2)"
 
     if [ "${FLAG_LIST}" -eq 0 ]; then
-      latest_version="$(get_latest_apk_package_version "${package_name}")"
+      latest_version="$(get_latest_apk_package_version "${package_name}" "${dockerfile}")"
       update_package_in_dockerfile "${dockerfile}" "${package_name}" "${current_version}" "${latest_version}"
 
       if [ "${FLAG_DRY_RUN}" -eq 0 ] && [ "${FLAG_COMMIT}" -eq 1 ] && [ "${current_version}" != "${latest_version}" ]; then
@@ -249,7 +267,7 @@ update_debian_dockerfile() {
     current_version="$(printf '%s\n' "${line}" | cut -d '=' -f 2)"
 
     if [ "${FLAG_LIST}" -eq 0 ]; then
-      latest_version="$(get_latest_apt_package_version "${package_name}")"
+      latest_version="$(get_latest_apt_package_version "${package_name}" "${dockerfile}")"
       update_package_in_dockerfile "${dockerfile}" "${package_name}" "${current_version}" "${latest_version}"
 
       if [ "${FLAG_DRY_RUN}" -eq 0 ] && [ "${FLAG_COMMIT}" -eq 1 ] && [ "${current_version}" != "${latest_version}" ]; then
@@ -304,12 +322,24 @@ readonly FLAG_LIST
 trap interrupt SIGINT
 
 if [ "${FLAG_LIST}" -eq 0 ]; then
+  if ! command -v docker > /dev/null 2>&1; then
+    die 'Docker CLI is not installed'
+  fi
+
+  if ! docker info > /dev/null 2>&1; then
+    die 'Docker daemon is not running'
+  fi
+
   print_step_dotted 'Pulling Docker images'
   printf '\n'
   print_separator
-  docker pull "${DOCKER_ALPINE_IMAGE}"
+  docker pull "$(get_base_image './latest/alpine/Dockerfile')"
   print_separator
-  docker pull "${DOCKER_DEBIAN_IMAGE}"
+  docker pull "$(get_base_image './latest/debian/Dockerfile')"
+  print_separator
+  docker pull "$(get_base_image './official/alpine/Dockerfile')"
+  print_separator
+  docker pull "$(get_base_image './official/debian/Dockerfile')"
   print_separator
 fi
 
