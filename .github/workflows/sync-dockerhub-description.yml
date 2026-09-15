@@ -1,11 +1,11 @@
-name: Update
+name: Sync Docker Hub description
 
 on:
   push:
     branches:
       - main
     paths:
-      - .github/workflows/update.yml
+      - .github/workflows/sync-dockerhub-description.yml
       - DOCKERHUB.md
   workflow_dispatch:
 
