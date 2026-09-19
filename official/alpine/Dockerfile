@@ -18,13 +18,13 @@ WORKDIR /tmp/
 # hadolint ignore=DL3003
 RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
   && apk add --no-cache --virtual .ktools-deps \
-    build-base='0.5-r3' \
-    cmake='3.31.7-r1' \
-    g++='14.2.0-r6' \
-    make='4.4.1-r3' \
-    musl-dev='1.2.5-r12' \
+    build-base='0.5-r4' \
+    cmake='4.2.3-r0' \
+    g++='15.2.0-r5' \
+    make='4.4.1-r4' \
+    musl-dev='1.2.6-r2' \
     patch='2.8-r0' \
-    readline-dev='8.2.13-r1' \
+    readline-dev='8.3.3-r1' \
   # ktools
   && wget -q "https://github.com/nsimplex/ktools/archive/refs/tags/${KTOOLS_VERSION}.tar.gz" \
   && tar -xzf "./${KTOOLS_VERSION}.tar.gz" \
