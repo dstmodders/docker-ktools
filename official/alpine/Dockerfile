@@ -31,6 +31,7 @@ RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
   && wget -q https://github.com/dstmodders/ktools/commit/47f38381671e03455eab193a1d3a88e11666af99.patch \
   && cd "/tmp/ktools-${KTOOLS_VERSION}/" \
   && patch -p1 < /tmp/47f38381671e03455eab193a1d3a88e11666af99.patch \
+  && sed -i 's/exec cmake -DCMAKE_BUILD_TYPE=Release ./exec cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ./g' configure \
   && ./configure \
   && : "${BUILD_CPUS:=$(($(nproc) > 1 ? $(nproc) / 2 : 1))}" \
   && echo "BUILD_CPUS=${BUILD_CPUS}" \
