@@ -15,7 +15,7 @@
   "devDependencies": {
     "hadolint": "^0.4.2",
     "npm-run-all2": "^9.0.3",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.7",
     "prettier-plugin-sh": "^0.19.0",
     "shellcheck": "^4.1.0",
     "sort-package-json": "^4.0.0"
