@@ -46,7 +46,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Send Slack notification
-        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
+        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
         if: ${{ github.event_name != 'pull_request' }}
         id: slack
         with:
@@ -109,7 +109,7 @@ jobs:
           tags: |
             ${{ secrets.PRIVATE_REGISTRY_HOST }}/ktools:official-${{ matrix.image.version }}-alpine
       - name: Update Slack notification
-        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
+        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
         if: ${{ github.event_name != 'pull_request' && always() }}
         with:
           fields: |
@@ -130,7 +130,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Send Slack notification
-        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
+        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
         if: ${{ github.event_name != 'pull_request' }}
         id: slack
         with:
@@ -193,7 +193,7 @@ jobs:
           tags: |
             ${{ secrets.PRIVATE_REGISTRY_HOST }}/ktools:${{ matrix.image.version }}-alpine
       - name: Update Slack notification
-        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
+        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
         if: ${{ github.event_name != 'pull_request' && always() }}
         with:
           fields: |
@@ -216,7 +216,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Send Slack notification
-        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
+        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
         if: ${{ github.event_name != 'pull_request' }}
         id: slack
         with:
@@ -315,7 +315,7 @@ jobs:
           sbom: false
           tags: ${{ steps.alpine-meta.outputs.tags }}
       - name: Update Slack notification
-        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
+        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
         if: ${{ github.event_name != 'pull_request' && always() }}
         with:
           fields: |
@@ -338,7 +338,7 @@ jobs:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Send Slack notification
-        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
+        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
         if: ${{ github.event_name != 'pull_request' }}
         id: slack
         with:
@@ -433,7 +433,7 @@ jobs:
           sbom: false
           tags: ${{ steps.alpine-meta.outputs.tags }}
       - name: Update Slack notification
-        uses: codedsolar/slack-action@59996e0967dce98cf0f76825cad94daa7e6d4936 # v1.4.0
+        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
         if: ${{ github.event_name != 'pull_request' && always() }}
         with:
           fields: |
