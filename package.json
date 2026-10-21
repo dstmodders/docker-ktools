@@ -18,7 +18,7 @@
     "prettier": "^3.9.10",
     "prettier-plugin-sh": "^0.20.2",
     "shellcheck": "^4.1.0",
-    "sort-package-json": "^4.0.0"
+    "sort-package-json": "^4.1.0"
   },
   "packageManager": "pnpm@11.17.0"
 }
