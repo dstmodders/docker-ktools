@@ -22,8 +22,8 @@ RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
     cmake='4.2.3-r0' \
     g++='15.2.0-r5' \
     make='4.4.1-r4' \
-    musl-dev='1.2.6-r2' \
-    patch='2.8-r0' \
+    musl-dev='1.2.6-r3' \
+    patch='2.8.1-r0' \
     readline-dev='8.3.3-r1' \
   # ktools
   && wget -q "https://github.com/nsimplex/ktools/archive/refs/tags/${KTOOLS_VERSION}.tar.gz" \
