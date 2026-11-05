@@ -22,7 +22,7 @@ RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
     cmake='4.2.3-r0' \
     g++='15.2.0-r5' \
     make='4.4.1-r4' \
-    musl-dev='1.2.6-r2' \
+    musl-dev='1.2.6-r3' \
     readline-dev='8.3.3-r1' \
   # ktools
   && wget -q "https://github.com/dstmodders/ktools/archive/refs/tags/v${KTOOLS_VERSION}.tar.gz" \
