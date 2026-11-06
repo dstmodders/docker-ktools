@@ -20,5 +20,5 @@
     "shellcheck": "^4.1.0",
     "sort-package-json": "^4.1.0"
   },
-  "packageManager": "pnpm@11.17.0"
+  "packageManager": "pnpm@12.18.0"
 }
