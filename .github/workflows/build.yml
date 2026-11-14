@@ -24,6 +24,8 @@ jobs:
     outputs:
       latest: ${{ steps.set-matrix.outputs.latest }}
       official: ${{ steps.set-matrix.outputs.official }}
+      latest-fields-pending: ${{ steps.set-matrix.outputs.latest-fields-pending }}
+      official-fields-pending: ${{ steps.set-matrix.outputs.official-fields-pending }}
     steps:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -34,28 +36,43 @@ jobs:
           {
             echo "latest=$(jq -cM .latest <<< "$json")"
             echo "official=$(jq -cM .official <<< "$json")"
+            echo "latest-fields-pending<<EOF"
+            jq -r '.latest[] | "ktools \(.version) / IM \(.imagemagick_version): Pending..."' <<< "$json"
+            echo "EOF"
+            echo "official-fields-pending<<EOF"
+            jq -r '.official[] | "ktools \(.version) / IM \(.imagemagick_version): Pending..."' <<< "$json"
+            echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-  official-build:
+  official-build-notify:
     needs: prepare
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' }}
+    outputs:
+      slack-timestamp: ${{ steps.slack.outputs.slack-timestamp }}
+    steps:
+      - name: Send Slack notification
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
+        id: slack
+        with:
+          text: GitHub Actions <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} / official-build> job in {GITHUB_REF} by {GITHUB_ACTOR}
+          fields: |
+            {STATUS}
+            {REF}
+            ${{ needs.prepare.outputs.official-fields-pending }}
+          status: in-progress
+
+  official-build:
+    needs: [prepare, official-build-notify]
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.prepare.result == 'success' }}
     strategy:
+      fail-fast: false
       matrix:
         image: ${{ fromJSON(needs.prepare.outputs.official) }}
     steps:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Send Slack notification
-        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
-        if: ${{ github.event_name != 'pull_request' }}
-        id: slack
-        with:
-          fields: |
-            {STATUS}
-            {REF}
-            ImageMagick version: ${{ matrix.image.imagemagick_version }}
-            ktools version: ${{ matrix.image.version }}
-          status: in-progress
       - name: Set up QEMU
         uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
         with:
@@ -109,37 +126,99 @@ jobs:
           tags: |
             ${{ secrets.PRIVATE_REGISTRY_HOST }}/ktools:official-${{ matrix.image.version }}-alpine
       - name: Update Slack notification
-        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
-        if: ${{ github.event_name != 'pull_request' && always() }}
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
+        if: ${{ always() && needs.official-build-notify.outputs.slack-timestamp != '' }}
+        continue-on-error: true
         with:
+          text: GitHub Actions <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} / official-build> job in {GITHUB_REF} by {GITHUB_ACTOR}
+          fields-mode: merge
+          ignore-failures: true
+          preserve-color: true
+          fields: |
+            ktools ${{ matrix.image.version }} / IM ${{ matrix.image.imagemagick_version }}: ${{ job.status == 'success' && 'Success' || job.status == 'cancelled' && 'Cancelled' || job.status == 'skipped' && 'Skipped' || 'Failure' }}
+          timestamp: ${{ needs.official-build-notify.outputs.slack-timestamp }}
+      - name: Save Slack field outcome
+        if: ${{ always() }}
+        run: |
+          case "${{ job.status }}" in
+            success) value=Success ;;
+            cancelled) value=Cancelled ;;
+            skipped) value=Skipped ;;
+            *) value=Failure ;;
+          esac
+          mkdir -p .slack-field
+          printf 'ktools %s / IM %s: %s\n' \
+            '${{ matrix.image.version }}' \
+            '${{ matrix.image.imagemagick_version }}' \
+            "$value" > .slack-field/field.txt
+      - name: Upload Slack field outcome
+        if: ${{ always() && needs.official-build-notify.outputs.slack-timestamp != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: slack-field-official-build-${{ matrix.image.version }}
+          path: .slack-field/field.txt
+          if-no-files-found: error
+          retention-days: 1
+
+  official-build-finalize:
+    needs: [official-build-notify, official-build]
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.official-build-notify.result == 'success' }}
+    steps:
+      - name: Download Slack field outcomes
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: slack-field-official-build-*
+          path: slack-fields
+      - name: Assemble Slack fields
+        id: fields
+        run: |
+          {
+            echo 'fields<<EOF'
+            find slack-fields -type f -name field.txt | sort | while read -r f; do cat "$f"; done
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - name: Finalize Slack notification
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
+        with:
+          text: GitHub Actions <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} / official-build> job in {GITHUB_REF} by {GITHUB_ACTOR}
+          color: ${{ needs.official-build.result == 'success' && '#24a943' || needs.official-build.result == 'cancelled' && '#1f242b' || '#cc1f2d' }}
           fields: |
             {STATUS}
             {REF}
-            ImageMagick version: ${{ matrix.image.imagemagick_version }}
-            ktools version: ${{ matrix.image.version }}
-          status: ${{ job.status }}
-          timestamp: ${{ steps.slack.outputs.slack-timestamp }}
+            ${{ steps.fields.outputs.fields }}
+          status: ${{ needs.official-build.result == 'success' && 'success' || needs.official-build.result == 'cancelled' && 'cancelled' || 'failure' }}
+          timestamp: ${{ needs.official-build-notify.outputs.slack-timestamp }}
 
-  latest-build:
+  latest-build-notify:
     needs: prepare
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' }}
+    outputs:
+      slack-timestamp: ${{ steps.slack.outputs.slack-timestamp }}
+    steps:
+      - name: Send Slack notification
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
+        id: slack
+        with:
+          text: GitHub Actions <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} / latest-build> job in {GITHUB_REF} by {GITHUB_ACTOR}
+          fields: |
+            {STATUS}
+            {REF}
+            ${{ needs.prepare.outputs.latest-fields-pending }}
+          status: in-progress
+
+  latest-build:
+    needs: [prepare, latest-build-notify]
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.prepare.result == 'success' }}
     strategy:
+      fail-fast: false
       matrix:
         image: ${{ fromJSON(needs.prepare.outputs.latest) }}
     steps:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Send Slack notification
-        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
-        if: ${{ github.event_name != 'pull_request' }}
-        id: slack
-        with:
-          fields: |
-            {STATUS}
-            {REF}
-            ImageMagick version: ${{ matrix.image.imagemagick_version }}
-            ktools version: ${{ matrix.image.version }}
-          status: in-progress
       - name: Set up QEMU
         uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
         with:
@@ -193,39 +272,100 @@ jobs:
           tags: |
             ${{ secrets.PRIVATE_REGISTRY_HOST }}/ktools:${{ matrix.image.version }}-alpine
       - name: Update Slack notification
-        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
-        if: ${{ github.event_name != 'pull_request' && always() }}
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
+        if: ${{ always() && needs.latest-build-notify.outputs.slack-timestamp != '' }}
+        continue-on-error: true
         with:
+          text: GitHub Actions <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} / latest-build> job in {GITHUB_REF} by {GITHUB_ACTOR}
+          fields-mode: merge
+          ignore-failures: true
+          preserve-color: true
+          fields: |
+            ktools ${{ matrix.image.version }} / IM ${{ matrix.image.imagemagick_version }}: ${{ job.status == 'success' && 'Success' || job.status == 'cancelled' && 'Cancelled' || job.status == 'skipped' && 'Skipped' || 'Failure' }}
+          timestamp: ${{ needs.latest-build-notify.outputs.slack-timestamp }}
+      - name: Save Slack field outcome
+        if: ${{ always() }}
+        run: |
+          case "${{ job.status }}" in
+            success) value=Success ;;
+            cancelled) value=Cancelled ;;
+            skipped) value=Skipped ;;
+            *) value=Failure ;;
+          esac
+          mkdir -p .slack-field
+          printf 'ktools %s / IM %s: %s\n' \
+            '${{ matrix.image.version }}' \
+            '${{ matrix.image.imagemagick_version }}' \
+            "$value" > .slack-field/field.txt
+      - name: Upload Slack field outcome
+        if: ${{ always() && needs.latest-build-notify.outputs.slack-timestamp != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: slack-field-latest-build-${{ matrix.image.version }}
+          path: .slack-field/field.txt
+          if-no-files-found: error
+          retention-days: 1
+
+  latest-build-finalize:
+    needs: [latest-build-notify, latest-build]
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.latest-build-notify.result == 'success' }}
+    steps:
+      - name: Download Slack field outcomes
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: slack-field-latest-build-*
+          path: slack-fields
+      - name: Assemble Slack fields
+        id: fields
+        run: |
+          {
+            echo 'fields<<EOF'
+            find slack-fields -type f -name field.txt | sort | while read -r f; do cat "$f"; done
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - name: Finalize Slack notification
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
+        with:
+          text: GitHub Actions <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} / latest-build> job in {GITHUB_REF} by {GITHUB_ACTOR}
+          color: ${{ needs.latest-build.result == 'success' && '#24a943' || needs.latest-build.result == 'cancelled' && '#1f242b' || '#cc1f2d' }}
           fields: |
             {STATUS}
             {REF}
-            ImageMagick version: ${{ matrix.image.imagemagick_version }}
-            ktools version: ${{ matrix.image.version }}
-          status: ${{ job.status }}
-          timestamp: ${{ steps.slack.outputs.slack-timestamp }}
+            ${{ steps.fields.outputs.fields }}
+          status: ${{ needs.latest-build.result == 'success' && 'success' || needs.latest-build.result == 'cancelled' && 'cancelled' || 'failure' }}
+          timestamp: ${{ needs.latest-build-notify.outputs.slack-timestamp }}
 
-  official-push:
+  official-push-notify:
     needs: [prepare, official-build]
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    outputs:
+      slack-timestamp: ${{ steps.slack.outputs.slack-timestamp }}
+    steps:
+      - name: Send Slack notification
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
+        id: slack
+        with:
+          text: GitHub Actions <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} / official-push> job in {GITHUB_REF} by {GITHUB_ACTOR}
+          fields: |
+            {STATUS}
+            {REF}
+            ${{ needs.prepare.outputs.official-fields-pending }}
+          status: in-progress
+
+  official-push:
+    needs: [prepare, official-build, official-push-notify]
+    runs-on: ubuntu-latest
+    if: ${{ always() && github.ref == 'refs/heads/main' && needs.official-build.result == 'success' }}
     strategy:
+      fail-fast: false
       max-parallel: 1
       matrix:
         image: ${{ fromJSON(needs.prepare.outputs.official) }}
     steps:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Send Slack notification
-        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
-        if: ${{ github.event_name != 'pull_request' }}
-        id: slack
-        with:
-          fields: |
-            {STATUS}
-            {REF}
-            ImageMagick version: ${{ matrix.image.imagemagick_version }}
-            ktools version: ${{ matrix.image.version }}
-          status: in-progress
       - name: Set up QEMU
         uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
         with:
@@ -315,39 +455,100 @@ jobs:
           sbom: false
           tags: ${{ steps.alpine-meta.outputs.tags }}
       - name: Update Slack notification
-        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
-        if: ${{ github.event_name != 'pull_request' && always() }}
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
+        if: ${{ always() && needs.official-push-notify.outputs.slack-timestamp != '' }}
+        continue-on-error: true
         with:
+          text: GitHub Actions <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} / official-push> job in {GITHUB_REF} by {GITHUB_ACTOR}
+          fields-mode: merge
+          ignore-failures: true
+          preserve-color: true
+          fields: |
+            ktools ${{ matrix.image.version }} / IM ${{ matrix.image.imagemagick_version }}: ${{ job.status == 'success' && 'Success' || job.status == 'cancelled' && 'Cancelled' || job.status == 'skipped' && 'Skipped' || 'Failure' }}
+          timestamp: ${{ needs.official-push-notify.outputs.slack-timestamp }}
+      - name: Save Slack field outcome
+        if: ${{ always() }}
+        run: |
+          case "${{ job.status }}" in
+            success) value=Success ;;
+            cancelled) value=Cancelled ;;
+            skipped) value=Skipped ;;
+            *) value=Failure ;;
+          esac
+          mkdir -p .slack-field
+          printf 'ktools %s / IM %s: %s\n' \
+            '${{ matrix.image.version }}' \
+            '${{ matrix.image.imagemagick_version }}' \
+            "$value" > .slack-field/field.txt
+      - name: Upload Slack field outcome
+        if: ${{ always() && needs.official-push-notify.outputs.slack-timestamp != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: slack-field-official-push-${{ matrix.image.version }}
+          path: .slack-field/field.txt
+          if-no-files-found: error
+          retention-days: 1
+
+  official-push-finalize:
+    needs: [official-push-notify, official-push]
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.official-push-notify.result == 'success' }}
+    steps:
+      - name: Download Slack field outcomes
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: slack-field-official-push-*
+          path: slack-fields
+      - name: Assemble Slack fields
+        id: fields
+        run: |
+          {
+            echo 'fields<<EOF'
+            find slack-fields -type f -name field.txt | sort | while read -r f; do cat "$f"; done
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - name: Finalize Slack notification
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
+        with:
+          text: GitHub Actions <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} / official-push> job in {GITHUB_REF} by {GITHUB_ACTOR}
+          color: ${{ needs.official-push.result == 'success' && '#24a943' || needs.official-push.result == 'cancelled' && '#1f242b' || '#cc1f2d' }}
           fields: |
             {STATUS}
             {REF}
-            ImageMagick version: ${{ matrix.image.imagemagick_version }}
-            ktools version: ${{ matrix.image.version }}
-          status: ${{ job.status }}
-          timestamp: ${{ steps.slack.outputs.slack-timestamp }}
+            ${{ steps.fields.outputs.fields }}
+          status: ${{ needs.official-push.result == 'success' && 'success' || needs.official-push.result == 'cancelled' && 'cancelled' || 'failure' }}
+          timestamp: ${{ needs.official-push-notify.outputs.slack-timestamp }}
 
-  latest-push:
+  latest-push-notify:
     needs: [prepare, latest-build, official-push]
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    outputs:
+      slack-timestamp: ${{ steps.slack.outputs.slack-timestamp }}
+    steps:
+      - name: Send Slack notification
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
+        id: slack
+        with:
+          text: GitHub Actions <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} / latest-push> job in {GITHUB_REF} by {GITHUB_ACTOR}
+          fields: |
+            {STATUS}
+            {REF}
+            ${{ needs.prepare.outputs.latest-fields-pending }}
+          status: in-progress
+
+  latest-push:
+    needs: [prepare, latest-build, official-push, latest-push-notify]
+    runs-on: ubuntu-latest
+    if: ${{ always() && github.ref == 'refs/heads/main' && needs.latest-build.result == 'success' && needs.official-push.result == 'success' }}
     strategy:
+      fail-fast: false
       max-parallel: 1
       matrix:
         image: ${{ fromJSON(needs.prepare.outputs.latest) }}
     steps:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Send Slack notification
-        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
-        if: ${{ github.event_name != 'pull_request' }}
-        id: slack
-        with:
-          fields: |
-            {STATUS}
-            {REF}
-            ImageMagick version: ${{ matrix.image.imagemagick_version }}
-            ktools version: ${{ matrix.image.version }}
-          status: in-progress
       - name: Set up QEMU
         uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
         with:
@@ -433,13 +634,66 @@ jobs:
           sbom: false
           tags: ${{ steps.alpine-meta.outputs.tags }}
       - name: Update Slack notification
-        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
-        if: ${{ github.event_name != 'pull_request' && always() }}
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
+        if: ${{ always() && needs.latest-push-notify.outputs.slack-timestamp != '' }}
+        continue-on-error: true
         with:
+          text: GitHub Actions <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} / latest-push> job in {GITHUB_REF} by {GITHUB_ACTOR}
+          fields-mode: merge
+          ignore-failures: true
+          preserve-color: true
+          fields: |
+            ktools ${{ matrix.image.version }} / IM ${{ matrix.image.imagemagick_version }}: ${{ job.status == 'success' && 'Success' || job.status == 'cancelled' && 'Cancelled' || job.status == 'skipped' && 'Skipped' || 'Failure' }}
+          timestamp: ${{ needs.latest-push-notify.outputs.slack-timestamp }}
+      - name: Save Slack field outcome
+        if: ${{ always() }}
+        run: |
+          case "${{ job.status }}" in
+            success) value=Success ;;
+            cancelled) value=Cancelled ;;
+            skipped) value=Skipped ;;
+            *) value=Failure ;;
+          esac
+          mkdir -p .slack-field
+          printf 'ktools %s / IM %s: %s\n' \
+            '${{ matrix.image.version }}' \
+            '${{ matrix.image.imagemagick_version }}' \
+            "$value" > .slack-field/field.txt
+      - name: Upload Slack field outcome
+        if: ${{ always() && needs.latest-push-notify.outputs.slack-timestamp != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: slack-field-latest-push-${{ matrix.image.version }}
+          path: .slack-field/field.txt
+          if-no-files-found: error
+          retention-days: 1
+
+  latest-push-finalize:
+    needs: [latest-push-notify, latest-push]
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.latest-push-notify.result == 'success' }}
+    steps:
+      - name: Download Slack field outcomes
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: slack-field-latest-push-*
+          path: slack-fields
+      - name: Assemble Slack fields
+        id: fields
+        run: |
+          {
+            echo 'fields<<EOF'
+            find slack-fields -type f -name field.txt | sort | while read -r f; do cat "$f"; done
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - name: Finalize Slack notification
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
+        with:
+          text: GitHub Actions <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }} / latest-push> job in {GITHUB_REF} by {GITHUB_ACTOR}
+          color: ${{ needs.latest-push.result == 'success' && '#24a943' || needs.latest-push.result == 'cancelled' && '#1f242b' || '#cc1f2d' }}
           fields: |
             {STATUS}
             {REF}
-            ImageMagick version: ${{ matrix.image.imagemagick_version }}
-            ktools version: ${{ matrix.image.version }}
-          status: ${{ job.status }}
-          timestamp: ${{ steps.slack.outputs.slack-timestamp }}
+            ${{ steps.fields.outputs.fields }}
+          status: ${{ needs.latest-push.result == 'success' && 'success' || needs.latest-push.result == 'cancelled' && 'cancelled' || 'failure' }}
+          timestamp: ${{ needs.latest-push-notify.outputs.slack-timestamp }}
