@@ -10,14 +10,16 @@
 #   bump-packages.sh -l
 #
 # Flags:
-#   -c, --commit    Commit changes
-#   -d, --dry-run   Only check and don't apply or commit any changes
-#   -l, --list      Only list packages and their current versions
-#   -h, --help      Show this help message
+#   -c, --commit            Commit changes
+#   -d, --dry-run           Only check and don't apply or commit any changes
+#   -l, --list              Only list packages and their current versions
+#   -s, --sleep <seconds>   Sleep the given number of seconds between commits
+#                           (default "0")
+#   -h, --help              Show this help message
 #
 # Environment Variables:
-#   NO_COLOR        Set to 1 to disable terminal colors
-#                   (see no-color.org, default "0")
+#   NO_COLOR                Set to 1 to disable terminal colors
+#                           (see no-color.org, default "0")
 #
 set -euo pipefail
 
@@ -40,6 +42,7 @@ NO_COLOR="${NO_COLOR:-0}"
 FLAG_COMMIT=0
 FLAG_DRY_RUN=0
 FLAG_LIST=0
+FLAG_SLEEP_SECONDS=0
 
 get_packages_from_dockerfile() {
   local dockerfile="$1"
@@ -190,6 +193,9 @@ commit_changes() {
       else
         git commit -m "${commit_message_first_line}"
       fi
+      if [ "${FLAG_SLEEP_SECONDS}" -gt 0 ]; then
+        sleep "${FLAG_SLEEP_SECONDS}"
+      fi
     else
       print_step_skipped
     fi
@@ -305,6 +311,14 @@ while [ $# -gt 0 ]; do
     -l | --list)
       FLAG_LIST=1
       ;;
+    -s | --sleep)
+      shift
+      FLAG_SLEEP_SECONDS="${1:-}"
+      if ! [[ "${FLAG_SLEEP_SECONDS}" =~ ^[0-9]+$ ]]; then
+        # shellcheck disable=SC2016
+        die 'flag `--sleep` value should be a non-negative number of seconds'
+      fi
+      ;;
     -*)
       die 'unrecognized flag'
       ;;
@@ -318,6 +332,7 @@ done
 readonly FLAG_COMMIT
 readonly FLAG_DRY_RUN
 readonly FLAG_LIST
+readonly FLAG_SLEEP_SECONDS
 
 trap interrupt SIGINT
 
