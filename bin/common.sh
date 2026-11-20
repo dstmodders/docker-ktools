@@ -20,7 +20,7 @@ usage() {
         print buf
       }
     }
-  ' "$0"
+  ' "${BASE_DIR}/$(basename "$0")"
 }
 
 print_bold_color() {
