@@ -51,8 +51,7 @@ set_flag_sleep() {
     FLAG_SLEEP_SECONDS="${value}"
     return 0
   fi
-  # shellcheck disable=SC2016
-  die 'flag `--sleep` value should be a non-negative number of seconds'
+  die "flag '--sleep' value should be a non-negative number of seconds"
 }
 
 get_packages_from_dockerfile() {

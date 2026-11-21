@@ -72,8 +72,7 @@ set_flag_build_cpus() {
     FLAG_BUILD_CPUS="${value}"
     return 0
   else
-    # shellcheck disable=SC2016
-    die 'flag `--build-cpus` value should be a number'
+    die "flag '--build-cpus' value should be a number"
   fi
 }
 
@@ -83,8 +82,7 @@ set_flag_progress() {
     FLAG_PROGRESS="${value}"
     return 0
   else
-    # shellcheck disable=SC2016
-    die 'flag `--progress` value should be one of: "auto", "plain", "tty", "rawjson"'
+    die "flag '--progress' value should be one of: 'auto', 'plain', 'tty', 'rawjson'"
   fi
 }
 
@@ -115,8 +113,7 @@ build_image() {
     # printf '\n'
   else
     build_cmd='docker build'
-    # shellcheck disable=SC2016
-    printf -- '--> Using `docker build`. Consider installing `docker buildx` for multi-platform support'
+    printf -- "--> Using 'docker build'. Consider installing 'docker buildx' for multi-platform support"
     printf '\n'
   fi
 
