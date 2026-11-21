@@ -140,9 +140,7 @@ done
 readonly FLAG_COMMIT
 readonly FLAG_DRY_RUN
 
-if ! command -v curl > /dev/null 2>&1; then
-  die 'curl is required'
-fi
+require_cmds curl jq
 
 trap interrupt SIGINT
 
