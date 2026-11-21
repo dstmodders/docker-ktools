@@ -10,11 +10,12 @@
 #   bump-packages.sh -l
 #
 # Flags:
+#   -s, --sleep <seconds>   Sleep the given number of seconds between commits
+#                           (default "0")
+#
 #   -c, --commit            Commit changes
 #   -d, --dry-run           Only check and don't apply or commit any changes
 #   -l, --list              Only list packages and their current versions
-#   -s, --sleep <seconds>   Sleep the given number of seconds between commits
-#                           (default "0")
 #   -h, --help              Show this help message
 #
 # Environment Variables:
@@ -43,6 +44,16 @@ FLAG_COMMIT=0
 FLAG_DRY_RUN=0
 FLAG_LIST=0
 FLAG_SLEEP_SECONDS=0
+
+set_flag_sleep() {
+  local value="$1"
+  if [ -n "${value}" ] && [[ "${value}" =~ ^[0-9]+$ ]]; then
+    FLAG_SLEEP_SECONDS="${value}"
+    return 0
+  fi
+  # shellcheck disable=SC2016
+  die 'flag `--sleep` value should be a non-negative number of seconds'
+}
 
 get_packages_from_dockerfile() {
   local dockerfile="$1"
@@ -311,13 +322,12 @@ while [ $# -gt 0 ]; do
     -l | --list)
       FLAG_LIST=1
       ;;
+    -s=* | --sleep=*)
+      set_flag_sleep "${key#*=}"
+      ;;
     -s | --sleep)
+      set_flag_sleep "${2:-}"
       shift
-      FLAG_SLEEP_SECONDS="${1:-}"
-      if ! [[ "${FLAG_SLEEP_SECONDS}" =~ ^[0-9]+$ ]]; then
-        # shellcheck disable=SC2016
-        die 'flag `--sleep` value should be a non-negative number of seconds'
-      fi
       ;;
     -*)
       die 'unrecognized flag'
