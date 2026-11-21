@@ -186,6 +186,10 @@ done
 readonly FLAG_COMMIT
 readonly FLAG_DRY_RUN
 
+if [ "${FLAG_COMMIT}" -eq 1 ] && [ "${FLAG_DRY_RUN}" -eq 1 ]; then
+  die "flags '-c' and '-d' cannot be used together"
+fi
+
 require_cmds jq
 
 trap interrupt SIGINT

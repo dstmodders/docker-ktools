@@ -343,6 +343,10 @@ readonly FLAG_DRY_RUN
 readonly FLAG_LIST
 readonly FLAG_SLEEP_SECONDS
 
+if [ "${FLAG_COMMIT}" -eq 1 ] && [ "${FLAG_DRY_RUN}" -eq 1 ]; then
+  die "flags '-c' and '-d' cannot be used together"
+fi
+
 trap interrupt SIGINT
 
 if [ "${FLAG_LIST}" -eq 0 ]; then
