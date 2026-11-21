@@ -22,7 +22,7 @@ set -euo pipefail
 
 # define constants
 BASE_DIR="$(cd "$(dirname "$0")" && pwd)"
-COMMIT_ID="$(git rev-parse --verify HEAD)"
+COMMIT_ID="$(git -C "${BASE_DIR}/.." rev-parse --verify HEAD)"
 COMMIT_MESSAGE='Change tags in DOCKERHUB.md and README.md'
 DISTS=('alpine' 'debian')
 HEADING_FOR_OVERVIEW='## Overview'
