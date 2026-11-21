@@ -100,3 +100,19 @@ print_step_skipped() {
   print_bold_color 3 "${value}"
   printf '\n'
 }
+
+is_installed() {
+  command -v "$1" > /dev/null 2>&1
+}
+
+require_cmds() {
+  local cmd
+  for cmd in "$@"; do
+    if ! is_installed "${cmd}"; then
+      if [ "${cmd}" = 'docker' ]; then
+        die 'Docker CLI is not installed'
+      fi
+      die "${cmd} is required"
+    fi
+  done
+}
