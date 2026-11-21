@@ -79,7 +79,7 @@ set_flag_build_cpus() {
 
 set_flag_progress() {
   local value="$1"
-  if [ -n "${value}" ] && [[ "${value}" =~ ^([0-9]+|auto|plain|tty|rawjson)$ ]]; then
+  if [ -n "${value}" ] && [[ "${value}" =~ ^(auto|plain|tty|rawjson)$ ]]; then
     FLAG_PROGRESS="${value}"
     return 0
   else
