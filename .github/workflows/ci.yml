@@ -83,7 +83,7 @@ jobs:
         with:
           node-version: 26.13.0
       - name: Send Slack notification
-        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
         if: ${{ github.event_name != 'pull_request' }}
         id: slack
         with:
@@ -174,7 +174,7 @@ jobs:
           fi
           exit "$exit_code"
       - name: Update Slack notification
-        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
         if: ${{ github.event_name != 'pull_request' && always() }}
         with:
           fields: |
@@ -348,7 +348,7 @@ jobs:
       - name: Load official image
         run: docker load -i ci-official-alpine.tar
       - name: Send Slack notification
-        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
         if: ${{ github.event_name != 'pull_request' }}
         id: slack
         with:
@@ -400,7 +400,7 @@ jobs:
           path: ./tests-official-results
           retention-days: 7
       - name: Update Slack notification
-        uses: codedsolar/slack-action@d8cb36ec61bca64402118bb908f2fe351a6d3f25 # v1.4.1
+        uses: codedsolar/slack-action@7747edbf087b4facb2726870a34a1f174314b5ae # v1.5.0
         if: ${{ github.event_name != 'pull_request' && always() }}
         with:
           fields: |
