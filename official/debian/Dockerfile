@@ -23,7 +23,7 @@ RUN sed -i 's/imagemagick/ktools/g' /etc/passwd /etc/group \
     build-essential='12.12' \
     ca-certificates='20250419+deb13u1' \
     cmake='3.31.6-2' \
-    patch='2.8-2' \
+    patch='2.8-2+deb13u1' \
     pkg-config='1.8.1-4' \
     wget='1.25.0-2' \
   # ktools
